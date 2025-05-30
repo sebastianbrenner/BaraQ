@@ -3,7 +3,6 @@ import { NavigationFilled, Settings20Regular } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
 import { useNavigationStore } from '../stores/NavigationStore';
 import { useTaskStore } from '../stores/TaskStore';
-import Stack from './helper/Stack';
 
 const useStyles = makeStyles({
     header: {
@@ -38,10 +37,8 @@ const Header = observer((): JSX.Element => {
                 <ToolbarButton icon={<NavigationFilled />} onClick={onClickToolbarButton} {...restoreFocusTargetAttributes} />
                 <ToolbarDivider />
                 <Text className={styles.title}>{selectedProject}</Text>
-                <Stack style={{ marginLeft: 'auto' }}>
-                    <ToolbarDivider />
-                    <ToolbarButton icon={<Settings20Regular />} />
-                </Stack>
+                <ToolbarDivider style={{ marginLeft: 'auto' }} />
+                <ToolbarButton icon={<Settings20Regular />} />
             </Toolbar>
         </div>
     );
