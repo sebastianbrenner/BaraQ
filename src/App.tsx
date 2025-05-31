@@ -3,10 +3,12 @@ import { Add28Filled } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
 import Header from './components/Header';
 import Login from './components/Login';
+import NewTaskModal from './components/modals/NewTaskModal';
+import SettingsModal from './components/modals/SettingsModal';
 import Navigator from './components/Navigator';
-import SettingsModal from './components/SettingsModal';
 import TaskTable from './components/TaskTable/TaskTable';
 import { useCredentialStore } from './stores/CredentialStore';
+import { useModalStore } from './stores/ModalStore';
 import { useStore } from './stores/Store';
 
 const useStyles = makeStyles({
@@ -29,6 +31,7 @@ const useStyles = makeStyles({
 
 const App = observer((): JSX.Element => {
     const credentialStore = useCredentialStore();
+    const { setModal } = useModalStore();
     const { theme } = useStore();
     const styles = useStyles();
 
@@ -41,17 +44,23 @@ const App = observer((): JSX.Element => {
         </div>
     );
 
+    const onClickNewTaskButton = (): void => {
+        setModal('newTask', true);
+    }
+
     return (
         <FluentProvider theme={theme === 'light' ? webLightTheme : webDarkTheme}>
             <div className={styles.root}>
                 <Header />
                 <SettingsModal />
+                <NewTaskModal />
                 <div className={styles.content}>{content}</div>
             </div>
             <CompoundButton shape="circular"
                 appearance="primary"
                 icon={<Add28Filled />}
-                aria-label="Add"
+                aria-label="Add task"
+                onClick={onClickNewTaskButton}
                 style={{
                     position: 'fixed',
                     bottom: '2rem',

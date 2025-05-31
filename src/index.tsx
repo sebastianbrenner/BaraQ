@@ -7,6 +7,7 @@ import { NavigationStore } from './stores/NavigationStore';
 import { SettingsStore } from './stores/SettingsStore';
 import { Store, StoreContext } from './stores/Store';
 import { TaskStore } from './stores/TaskStore';
+import { ModalStore } from './stores/ModalStore';
 
 const root = createRoot(document.getElementById('root')!);
 
@@ -23,6 +24,9 @@ if (!store.navigationStore) {
 }
 if (!store.settingsStore) {
     store.settingsStore = new SettingsStore();
+}
+if (!store.modalStore) {
+    store.modalStore = new ModalStore();
 }
 
 log.setLevel('debug');

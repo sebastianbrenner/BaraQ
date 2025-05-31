@@ -2,9 +2,10 @@ import log from 'loglevel';
 import { action, makeObservable, observable } from 'mobx';
 import { createContext, useContext } from 'react';
 import type { CredentialStore } from './CredentialStore';
+import type { ModalStore } from './ModalStore';
 import type { NavigationStore } from './NavigationStore';
-import type { TaskStore } from './TaskStore';
 import type { SettingsStore } from './SettingsStore';
+import type { TaskStore } from './TaskStore';
 
 export class Store {
     // theme
@@ -20,6 +21,7 @@ export class Store {
     taskStore?: TaskStore;
     navigationStore?: NavigationStore;
     settingsStore?: SettingsStore;
+    modalStore?: ModalStore;
 
     constructor() {
         makeObservable(this, {

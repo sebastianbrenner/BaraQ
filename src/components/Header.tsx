@@ -1,8 +1,8 @@
 import { makeStyles, Switch, Text, Toolbar, ToolbarButton, ToolbarDivider, useRestoreFocusTarget } from '@fluentui/react-components';
 import { NavigationFilled, Settings20Regular } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
+import { useModalStore } from '../stores/ModalStore';
 import { useNavigationStore } from '../stores/NavigationStore';
-import { useSettingsStore } from '../stores/SettingsStore';
 import { useStore } from '../stores/Store';
 import { useTaskStore } from '../stores/TaskStore';
 
@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 
 const Header = observer((): JSX.Element => {
     const store = useStore();
-    const { setShowSettings } = useSettingsStore();
+    const { setModal } = useModalStore();
     const styles = useStyles();
     const { setIsDrawerOpen } = useNavigationStore();
     const { selectedProject } = useTaskStore();
@@ -35,7 +35,7 @@ const Header = observer((): JSX.Element => {
     };
 
     const onClickSettings = (): void => {
-        setShowSettings(true);
+        setModal('settings', true);
     };
 
     return (
