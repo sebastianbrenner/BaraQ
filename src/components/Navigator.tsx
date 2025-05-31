@@ -1,6 +1,13 @@
-import { Avatar, makeStyles, tokens } from '@fluentui/react-components';
-import { SignOut20Regular, SignOutFilled, TabGroup20Filled, TabGroup20Regular, bundleIcon } from '@fluentui/react-icons';
-import { AppItem, NavDivider, NavDrawer, NavDrawerBody, NavDrawerFooter, NavDrawerHeader, NavItem, NavSectionHeader, type OnNavItemSelectData } from '@fluentui/react-nav-preview';
+import {
+    Avatar,
+    makeStyles, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, tokens
+} from '@fluentui/react-components';
+import {
+    AddCircle20Regular, AddCircleFilled, bundleIcon, MoreHorizontalFilled, MoreHorizontalRegular, SignOut20Regular, SignOutFilled, TabGroup20Filled, TabGroup20Regular
+} from '@fluentui/react-icons';
+import {
+    AppItem, NavDivider, NavDrawer, NavDrawerBody, NavDrawerFooter, NavDrawerHeader, NavItem, NavSectionHeader, type OnNavItemSelectData
+} from '@fluentui/react-nav-preview';
 import { observer } from 'mobx-react';
 import { useEffect, useRef, type JSX, type SyntheticEvent } from 'react';
 import logo from '../assets/logo.png';
@@ -9,6 +16,7 @@ import { useNavigationStore } from '../stores/NavigationStore';
 import { useTaskStore } from '../stores/TaskStore';
 import Stack from './helper/Stack';
 
+// styles for navigator
 const useStyles = makeStyles({
     root: {
         overflow: 'hidden',
@@ -16,13 +24,6 @@ const useStyles = makeStyles({
     },
     nav: {
         minWidth: '200px',
-    },
-    field: {
-        display: 'flex',
-        marginTop: '4px',
-        marginLeft: '8px',
-        flexDirection: 'column',
-        gridRowGap: tokens.spacingVerticalS,
     },
     noHover: {
         ':hover': {
@@ -39,8 +40,11 @@ const useStyles = makeStyles({
     },
 });
 
+// bundled icons
 const SignOut = bundleIcon(SignOutFilled, SignOut20Regular);
 const TabGroup = bundleIcon(TabGroup20Filled, TabGroup20Regular);
+const AddGroup = bundleIcon(AddCircleFilled, AddCircle20Regular);
+const MenuIcon = bundleIcon(MoreHorizontalFilled, MoreHorizontalRegular);
 
 const Navigator = observer((): JSX.Element => {
     const { username } = useCredentialStore();
@@ -52,10 +56,31 @@ const Navigator = observer((): JSX.Element => {
     const drawerRef = useRef<HTMLDivElement>(null);
 
     const projectNavItems = projects.map((project, index) => (
-        <NavItem icon={<TabGroup />} key={index} value={project}>
+        <NavItem icon={<TabGroup />} key={index} value={project} style={{ alignContent: 'center' }}>
             {project}
+            <Menu positioning={{ autoSize: true }}>
+                <MenuTrigger disableButtonEnhancement>
+                    <span style={{ marginLeft: 'auto' }}>
+                        <MenuIcon />
+                    </span>
+                </MenuTrigger>
+
+                <MenuPopover>
+                    <MenuList>
+                        <MenuItem>Umbenennen</MenuItem>
+                        <MenuItem className={styles.warningButton}>Löschen</MenuItem>
+                    </MenuList>
+                </MenuPopover>
+            </Menu>
         </NavItem>
     ));
+
+    projectNavItems.push(
+        <NavDivider key={'divider'} />,
+        <NavItem icon={<AddGroup />} key={'add'} value={'new'}>
+            Neues Project
+        </NavItem>
+    );
 
     // Close the drawer when the user clicks outside
     useEffect(() => {
@@ -74,8 +99,10 @@ const Navigator = observer((): JSX.Element => {
         };
     }, [isDrawerOpen]);
 
+    // close the drawer when a project is selected
     const onNavItemSelect = (_: Event | SyntheticEvent<Element, Event>, data: OnNavItemSelectData): void => {
         setIsDrawerOpen(false);
+        if (data.value === 'new') return;
         setSelectedProject(data.value);
     };
 
@@ -98,7 +125,7 @@ const Navigator = observer((): JSX.Element => {
                 </NavDrawerHeader>
                 <NavDivider />
                 <NavDrawerBody>
-                    <NavSectionHeader>Project</NavSectionHeader>
+                    <NavSectionHeader key={'projectHeader'}>Project</NavSectionHeader>
                     {projectNavItems}
                 </NavDrawerBody>
                 <NavDivider />
