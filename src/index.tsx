@@ -1,12 +1,12 @@
-import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import log from 'loglevel';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { CredentialStore } from './stores/CredentialStore';
+import { NavigationStore } from './stores/NavigationStore';
+import { SettingsStore } from './stores/SettingsStore';
 import { Store, StoreContext } from './stores/Store';
 import { TaskStore } from './stores/TaskStore';
-import { NavigationStore } from './stores/NavigationStore';
 
 const root = createRoot(document.getElementById('root')!);
 
@@ -21,6 +21,9 @@ if (!store.taskStore) {
 if (!store.navigationStore) {
     store.navigationStore = new NavigationStore();
 }
+if (!store.settingsStore) {
+    store.settingsStore = new SettingsStore();
+}
 
 log.setLevel('debug');
 log.debug('root created');
@@ -28,9 +31,7 @@ log.debug('root created');
 root.render(
     <StrictMode>
         <StoreContext.Provider value={store}>
-            <FluentProvider theme={webLightTheme}>
-                <App />
-            </FluentProvider>
+            <App />
         </StoreContext.Provider>
     </StrictMode>
 );

@@ -1,13 +1,14 @@
-import { makeStyles, Text, Toolbar, ToolbarButton, ToolbarDivider, useRestoreFocusTarget } from '@fluentui/react-components';
+import { makeStyles, Switch, Text, Toolbar, ToolbarButton, ToolbarDivider, useRestoreFocusTarget } from '@fluentui/react-components';
 import { NavigationFilled, Settings20Regular } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
 import { useNavigationStore } from '../stores/NavigationStore';
+import { useSettingsStore } from '../stores/SettingsStore';
+import { useStore } from '../stores/Store';
 import { useTaskStore } from '../stores/TaskStore';
 
 const useStyles = makeStyles({
     header: {
         padding: '8px',
-        backgroundColor: '#f3f2f1',
         boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
     },
     title: {
@@ -20,6 +21,8 @@ const useStyles = makeStyles({
 });
 
 const Header = observer((): JSX.Element => {
+    const store = useStore();
+    const { setShowSettings } = useSettingsStore();
     const styles = useStyles();
     const { setIsDrawerOpen } = useNavigationStore();
     const { selectedProject } = useTaskStore();
@@ -31,14 +34,19 @@ const Header = observer((): JSX.Element => {
         setIsDrawerOpen(true);
     };
 
+    const onClickSettings = (): void => {
+        setShowSettings(true);
+    };
+
     return (
         <div className={styles.header}>
             <Toolbar className={styles.toolbar}>
                 <ToolbarButton icon={<NavigationFilled />} onClick={onClickToolbarButton} {...restoreFocusTargetAttributes} />
                 <ToolbarDivider />
                 <Text className={styles.title}>{selectedProject}</Text>
-                <ToolbarDivider style={{ marginLeft: 'auto' }} />
-                <ToolbarButton icon={<Settings20Regular />} />
+                <Switch style={{ marginLeft: 'auto' }} label={store.theme} onClick={() => { store.setTheme(store.theme === 'light' ? 'dark' : 'light'); }} />
+                <ToolbarDivider />
+                <ToolbarButton onClick={onClickSettings} icon={<Settings20Regular />} />
             </Toolbar>
         </div>
     );
