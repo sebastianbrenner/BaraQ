@@ -2,7 +2,7 @@ import { Caption1, Card, Dialog, DialogBody, DialogSurface, DialogTitle, makeSty
 import log from 'loglevel';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
-import { useSettingsStore } from '../stores/SettingsStore';
+import { useModalStore } from '../../stores/ModalStore';
 
 const useStyles = makeStyles({
     drawerPanel: {
@@ -33,7 +33,7 @@ const treeItems = [
 ];
 
 const SettingsModal = observer((): JSX.Element => {
-    const { showSettings, setShowSettings } = useSettingsStore();
+    const { showSettingsModal, setModal } = useModalStore();
     const [selectedItem, setSelectedItem] = useState<string | null>('general');
     const styles = useStyles();
 
@@ -84,7 +84,7 @@ const SettingsModal = observer((): JSX.Element => {
     }
 
     return (
-        <Dialog open={showSettings} onOpenChange={(_, data) => setShowSettings(data.open)} >
+        <Dialog open={showSettingsModal} onOpenChange={(_, data) => setModal('settings', data.open)} >
             <DialogSurface style={{ paddingLeft: '24px' }}>
                 <DialogBody style={{ gridTemplateColumns: 'auto', columnGap: '8px', display: 'flex', width: '100%', height: '100%' }}>
                     <div>

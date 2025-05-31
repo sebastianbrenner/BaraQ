@@ -5,7 +5,7 @@ import { useStore } from './Store';
 
 export class TaskStore {
     public projects: string[] = ['Project 1', 'Project 2', 'Project 3'];
-    public selectedProject: string | undefined = this.projects[0];
+    public selectedProject: string = this.projects[0];
     public tasks: Task[] = [
         {
             id: '1',
