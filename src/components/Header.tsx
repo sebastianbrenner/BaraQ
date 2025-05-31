@@ -43,7 +43,7 @@ const Header = observer((): JSX.Element => {
             <Toolbar className={styles.toolbar}>
                 <ToolbarButton icon={<NavigationFilled />} onClick={onClickToolbarButton} {...restoreFocusTargetAttributes} />
                 <ToolbarDivider />
-                <Text className={styles.title}>{selectedProject}</Text>
+                <Text className={styles.title}>{selectedProject.name}</Text>
                 <Switch style={{ marginLeft: 'auto' }} label={store.theme} onClick={() => { store.setTheme(store.theme === 'light' ? 'dark' : 'light'); }} />
                 <ToolbarDivider />
                 <ToolbarButton onClick={onClickSettings} icon={<Settings20Regular />} />

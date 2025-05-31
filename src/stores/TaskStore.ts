@@ -1,11 +1,27 @@
 import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
-import type { Task } from '../types';
+import type { Project, Task } from '../types';
 import { useStore } from './Store';
 
 export class TaskStore {
-    public projects: string[] = ['Project 1', 'Project 2', 'Project 3'];
-    public selectedProject: string = this.projects[0];
+    public projects: Project[] = [
+        {
+            id: 'project1',
+            name: 'Project 1',
+            createdAt: new Date(),
+        },
+        {
+            id: 'project2',
+            name: 'Project 2',
+            createdAt: new Date(),
+        },
+        {
+            id: 'project3',
+            name: 'Project 3',
+            createdAt: new Date(),
+        },
+    ];
+    public selectedProject: Project = this.projects[0];
     public tasks: Task[] = [
         {
             id: '1',
@@ -14,7 +30,7 @@ export class TaskStore {
             done: true,
             priority: 'Medium',
             dueDate: new Date('2025-08-15'),
-            project: 'Project 1',
+            projectId: 'project1',
         },
         {
             id: '2',
@@ -23,7 +39,7 @@ export class TaskStore {
             done: false,
             priority: 'Low',
             dueDate: new Date('2025-08-16'),
-            project: 'Project 1',
+            projectId: 'project1',
         },
         {
             id: '3',
@@ -32,7 +48,7 @@ export class TaskStore {
             done: false,
             priority: 'Low',
             dueDate: new Date('2025-08-17'),
-            project: 'Project 1',
+            projectId: 'project1',
         },
         {
             id: '4',
@@ -41,7 +57,7 @@ export class TaskStore {
             done: false,
             priority: 'Medium',
             dueDate: new Date('2025-08-18'),
-            project: 'Project 2',
+            projectId: 'project2',
         },
         {
             id: '5',
@@ -50,7 +66,7 @@ export class TaskStore {
             done: true,
             priority: 'High',
             dueDate: new Date('2025-08-19'),
-            project: 'Project 2',
+            projectId: 'project2',
         },
         {
             id: '6',
@@ -59,7 +75,7 @@ export class TaskStore {
             done: false,
             priority: 'Low',
             dueDate: new Date('2025-08-20'),
-            project: 'Project 2',
+            projectId: 'project2',
         },
         {
             id: '7',
@@ -68,7 +84,7 @@ export class TaskStore {
             done: false,
             priority: 'Medium',
             dueDate: new Date('2025-08-21'),
-            project: 'Project 3',
+            projectId: 'project3',
         },
         {
             id: '8',
@@ -77,7 +93,7 @@ export class TaskStore {
             done: true,
             priority: 'Low',
             dueDate: new Date('2025-08-22'),
-            project: 'Project 3',
+            projectId: 'project3',
         },
         {
             id: '9',
@@ -86,11 +102,11 @@ export class TaskStore {
             done: true,
             priority: 'Low',
             dueDate: new Date('2025-08-23'),
-            project: 'Project 3',
+            projectId: 'project3',
         },
     ];
 
-    addProject = (project: string): void => {
+    addProject = (project: Project): void => {
         log.debug('TaskStore | addProject: ', project);
         this.projects.push(project);
     };
@@ -109,9 +125,11 @@ export class TaskStore {
         }
     };
 
-    setSelectedProject = (project: string): void => {
-        log.debug('TaskStore | setSelectedProject: ', project);
-        this.selectedProject = project;
+    setSelectedProject = (projectId: string): void => {
+        log.debug('TaskStore | setSelectedProject: ', projectId);
+        const newSelection = this.projects.find(project => project.id === projectId);
+        if (!newSelection) return;
+        this.selectedProject = newSelection;
     };
 
     constructor() {

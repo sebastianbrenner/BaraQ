@@ -2,10 +2,11 @@ import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
 import { useStore } from './Store';
 
-export type Modal = 'newTask' | 'settings';
+export type Modal = 'newTask' | 'newProject' | 'settings';
 
 export class ModalStore {
     showNewTaskModal: boolean = false;
+    showNewProjectModal: boolean = false;
     showSettingsModal: boolean = false;
 
     toggleModal = (modal: Modal): void => {
@@ -13,6 +14,9 @@ export class ModalStore {
         switch (modal) {
             case 'newTask':
                 this.showNewTaskModal = !this.showNewTaskModal;
+                break;
+            case 'newProject':
+                this.showNewProjectModal = !this.showNewProjectModal;
                 break;
             case 'settings':
                 this.showSettingsModal = !this.showSettingsModal;
@@ -27,6 +31,9 @@ export class ModalStore {
         switch (modal) {
             case 'newTask':
                 this.showNewTaskModal = value;
+                break;
+            case 'newProject':
+                this.showNewProjectModal = value;
                 break;
             case 'settings':
                 this.showSettingsModal = value;

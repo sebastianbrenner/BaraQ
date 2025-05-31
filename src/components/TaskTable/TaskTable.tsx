@@ -52,7 +52,7 @@ const TaskTable = observer((): JSX.Element => {
         switch (column) {
             case 'title':
             case 'description':
-            case 'project':
+            case 'projectId':
                 updatedItem[column] = value as string;
                 break;
             case 'done':
@@ -174,7 +174,7 @@ const TaskTable = observer((): JSX.Element => {
             </TableHeader>
             <TableBody>
                 {tasks
-                    .filter((item) => item.project === selectedProject)
+                    .filter((item) => item.projectId === selectedProject.id)
                     .sort((a, b) => {
                         if (!sortColumn) return 0;
                         const aVal = a[sortColumn];

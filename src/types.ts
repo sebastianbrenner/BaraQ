@@ -5,12 +5,13 @@ export type Task = {
     done: boolean;
     priority: Priority;
     dueDate: Date;
-    project: string;
+    projectId: string;
 };
 
 export type Project = {
     id: string;
     name: string;
+    createdAt: Date;
 };
 
 export const PRIORITIES = ['Low', 'Medium', 'High'] as const;

@@ -3,11 +3,11 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { CredentialStore } from './stores/CredentialStore';
+import { ModalStore } from './stores/ModalStore';
 import { NavigationStore } from './stores/NavigationStore';
 import { SettingsStore } from './stores/SettingsStore';
 import { Store, StoreContext } from './stores/Store';
 import { TaskStore } from './stores/TaskStore';
-import { ModalStore } from './stores/ModalStore';
 
 const root = createRoot(document.getElementById('root')!);
 

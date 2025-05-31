@@ -1,6 +1,7 @@
 import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Dropdown, Input, Label, makeStyles, Option, Textarea, type OptionOnSelectData, type SelectionEvents } from '@fluentui/react-components';
 import log from 'loglevel';
 import { observer } from 'mobx-react';
+import { nanoid } from 'nanoid';
 import { useState } from 'react';
 import { useModalStore } from '../../stores/ModalStore';
 import { useTaskStore } from '../../stores/TaskStore';
@@ -22,29 +23,29 @@ const NewTaskModal = observer((): JSX.Element => {
     const { addTask, projects, selectedProject } = useTaskStore();
     const styles = useStyles();
 
-    const [project, setDefaultProject] = useState(selectedProject);
+    const [projectId, setrojectId] = useState(selectedProject.id);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [priority, setPriority] = useState<string>(PRIORITIES[0]);
     const [dueDate, setDueDate] = useState<string>('');
 
     const onAddNewTask = (): void => {
-        log.debug('onAddNewTask', project, title, description, priority, dueDate);
+        log.debug('onAddNewTask', projectId, title, description, priority, dueDate);
         addTask({
-            id: crypto.randomUUID(),
+            id: nanoid(),
             title,
             description,
             done: false,
             priority: priority as Priority,
             dueDate: new Date(dueDate),
-            project,
+            projectId: projectId,
         })
         setModal('newTask', false);
     }
 
     const onChangeProject = (_: SelectionEvents, data: OptionOnSelectData): void => {
         if (!data.optionValue) return;
-        setDefaultProject(data.optionValue);
+        setrojectId(data.optionValue);
     }
 
     return (
@@ -54,9 +55,9 @@ const NewTaskModal = observer((): JSX.Element => {
                     <DialogTitle>
                         <Stack>
                             Neue Aufgabe für
-                            <Dropdown id={'projectDropdown'} name="project" value={project} style={{ flex: 1 }} onOptionSelect={onChangeProject}>
-                                {projects.map((option) => (
-                                    <Option key={option} value={option}>{option}</Option>
+                            <Dropdown id={'projectDropdown'} name="project" value={projects.find(item => item.id === projectId)!.name} style={{ flex: 1 }} onOptionSelect={onChangeProject}>
+                                {projects.map((project) => (
+                                    <Option key={project.id} value={project.id}>{project.name}</Option>
                                 ))}
                             </Dropdown>
                             erstellen

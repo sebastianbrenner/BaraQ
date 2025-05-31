@@ -1,9 +1,11 @@
 import {
     Avatar,
-    makeStyles, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, tokens
+    makeStyles,
+    tokens,
+    Tooltip
 } from '@fluentui/react-components';
 import {
-    AddCircle20Regular, AddCircleFilled, bundleIcon, MoreHorizontalFilled, MoreHorizontalRegular, SignOut20Regular, SignOutFilled, TabGroup20Filled, TabGroup20Regular
+    AddCircle20Regular, AddCircleFilled, bundleIcon, Edit20Regular, MoreHorizontalFilled, MoreHorizontalRegular, SignOut20Regular, SignOutFilled, TabGroup20Filled, TabGroup20Regular
 } from '@fluentui/react-icons';
 import {
     AppItem, NavDivider, NavDrawer, NavDrawerBody, NavDrawerFooter, NavDrawerHeader, NavItem, NavSectionHeader, type OnNavItemSelectData
@@ -12,6 +14,7 @@ import { observer } from 'mobx-react';
 import { useEffect, useRef, type JSX, type SyntheticEvent } from 'react';
 import logo from '../assets/logo.png';
 import { useCredentialStore } from '../stores/CredentialStore';
+import { useModalStore } from '../stores/ModalStore';
 import { useNavigationStore } from '../stores/NavigationStore';
 import { useTaskStore } from '../stores/TaskStore';
 import Stack from './helper/Stack';
@@ -48,6 +51,7 @@ const MenuIcon = bundleIcon(MoreHorizontalFilled, MoreHorizontalRegular);
 
 const Navigator = observer((): JSX.Element => {
     const { username } = useCredentialStore();
+    const { setModal } = useModalStore();
     const { isDrawerOpen, setIsDrawerOpen } = useNavigationStore();
     const taskStore = useTaskStore();
     const { projects, selectedProject, setSelectedProject } = taskStore;
@@ -56,28 +60,29 @@ const Navigator = observer((): JSX.Element => {
     const drawerRef = useRef<HTMLDivElement>(null);
 
     const projectNavItems = projects.map((project, index) => (
-        <NavItem icon={<TabGroup />} key={index} value={project} style={{ alignContent: 'center' }}>
-            {project}
-            <Menu positioning={{ autoSize: true }}>
-                <MenuTrigger disableButtonEnhancement>
-                    <span style={{ marginLeft: 'auto' }}>
-                        <MenuIcon />
-                    </span>
-                </MenuTrigger>
-
-                <MenuPopover>
-                    <MenuList>
-                        <MenuItem>Umbenennen</MenuItem>
-                        <MenuItem className={styles.warningButton}>Löschen</MenuItem>
-                    </MenuList>
-                </MenuPopover>
-            </Menu>
+        <NavItem icon={<TabGroup />} key={index} value={project.id}>
+            {project.name}
+            <div style={{ marginLeft: 'auto' }}>
+                <Tooltip content="Bearbeiten" relationship="label">
+                    <Edit20Regular
+                        aria-label="Bearbeiten"
+                        onClick={(e) => {
+                            e.stopPropagation(); // prevent NavItem click
+                            //onEdit(project);
+                        }}
+                    />
+                </Tooltip>
+            </div>
         </NavItem>
     ));
 
+    const onClickNewProject = (): void => {
+        setModal('newProject', true);
+    }
+
     projectNavItems.push(
         <NavDivider key={'divider'} />,
-        <NavItem icon={<AddGroup />} key={'add'} value={'new'}>
+        <NavItem icon={<AddGroup />} key={'add'} value={'new'} onClick={onClickNewProject}>
             Neues Project
         </NavItem>
     );
@@ -99,8 +104,8 @@ const Navigator = observer((): JSX.Element => {
         };
     }, [isDrawerOpen]);
 
-    // close the drawer when a project is selected
     const onNavItemSelect = (_: Event | SyntheticEvent<Element, Event>, data: OnNavItemSelectData): void => {
+        // close the drawer when anything is selected
         setIsDrawerOpen(false);
         if (data.value === 'new') return;
         setSelectedProject(data.value);
@@ -110,7 +115,7 @@ const Navigator = observer((): JSX.Element => {
         <div className={styles.root}>
             <NavDrawer
                 onNavItemSelect={onNavItemSelect}
-                selectedValue={selectedProject}
+                selectedValue={selectedProject.id}
                 defaultSelectedCategoryValue=""
                 open={isDrawerOpen}
                 className={styles.nav}
