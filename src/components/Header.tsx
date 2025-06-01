@@ -3,7 +3,6 @@ import { NavigationFilled, Settings20Regular } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
 import { useModalStore } from '../stores/ModalStore';
 import { useNavigationStore } from '../stores/NavigationStore';
-import { useStore } from '../stores/Store';
 import { useTaskStore } from '../stores/TaskStore';
 
 const useStyles = makeStyles({
@@ -21,7 +20,6 @@ const useStyles = makeStyles({
 });
 
 const Header = observer((): JSX.Element => {
-    const store = useStore();
     const { setModal } = useModalStore();
     const styles = useStyles();
     const { setIsDrawerOpen } = useNavigationStore();
@@ -44,6 +42,7 @@ const Header = observer((): JSX.Element => {
                 <ToolbarButton icon={<NavigationFilled />} onClick={onClickToolbarButton} {...restoreFocusTargetAttributes} />
                 <ToolbarDivider />
                 <Text className={styles.title}>{selectedProject.name}</Text>
+
                 <ToolbarDivider style={{ marginLeft: 'auto' }} />
                 <ToolbarButton onClick={onClickSettings} icon={<Settings20Regular />} />
             </Toolbar>

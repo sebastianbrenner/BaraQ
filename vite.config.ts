@@ -6,6 +6,7 @@ export default defineConfig({
     server: {
         port: 3000, // or your preferred port
     },
+    base: '/baraq/',
     resolve: {
         alias: {
             '@': '/src', // if you want to keep path aliases like '@/components'
