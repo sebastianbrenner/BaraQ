@@ -111,6 +111,15 @@ export class TaskStore {
         this.projects.push(project);
     };
 
+    updateProject = (project: Project): void => {
+        log.debug('TaskStore | updateProject with Id: ', project.id);
+        const index = this.projects.findIndex((p) => p.id === project.id);
+        if (index !== -1) {
+            //this is observable-safe
+            this.projects[index] = project;
+        }
+    }
+
     addTask = (task: Task): void => {
         log.debug('TaskStore | addTask: ', task);
         this.tasks.push(task);

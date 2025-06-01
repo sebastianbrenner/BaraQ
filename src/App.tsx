@@ -3,6 +3,7 @@ import { Add28Filled } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
 import Header from './components/Header';
 import Login from './components/Login';
+import EditProjectModal from './components/modals/EditProjectModal';
 import NewProjectModal from './components/modals/NewProjectModal';
 import NewTaskModal from './components/modals/NewTaskModal';
 import SettingsModal from './components/modals/SettingsModal';
@@ -56,6 +57,7 @@ const App = observer((): JSX.Element => {
                 <SettingsModal />
                 <NewTaskModal />
                 <NewProjectModal />
+                <EditProjectModal />
                 <div className={styles.content}>{content}</div>
             </div>
             <CompoundButton shape="circular"

@@ -5,7 +5,8 @@ import {
     Tooltip
 } from '@fluentui/react-components';
 import {
-    AddCircle20Regular, AddCircleFilled, bundleIcon, Edit20Regular, MoreHorizontalFilled, MoreHorizontalRegular, SignOut20Regular, SignOutFilled, TabGroup20Filled, TabGroup20Regular
+    AddCircle20Regular, AddCircleFilled, bundleIcon, Edit20Regular,
+    SignOut20Regular, SignOutFilled, TabGroup20Filled, TabGroup20Regular
 } from '@fluentui/react-icons';
 import {
     AppItem, NavDivider, NavDrawer, NavDrawerBody, NavDrawerFooter, NavDrawerHeader, NavItem, NavSectionHeader, type OnNavItemSelectData
@@ -47,17 +48,22 @@ const useStyles = makeStyles({
 const SignOut = bundleIcon(SignOutFilled, SignOut20Regular);
 const TabGroup = bundleIcon(TabGroup20Filled, TabGroup20Regular);
 const AddGroup = bundleIcon(AddCircleFilled, AddCircle20Regular);
-const MenuIcon = bundleIcon(MoreHorizontalFilled, MoreHorizontalRegular);
 
 const Navigator = observer((): JSX.Element => {
     const { username } = useCredentialStore();
     const { setModal } = useModalStore();
-    const { isDrawerOpen, setIsDrawerOpen } = useNavigationStore();
+    const { isDrawerOpen, setIsDrawerOpen, setEditProjectId } = useNavigationStore();
     const taskStore = useTaskStore();
     const { projects, selectedProject, setSelectedProject } = taskStore;
     const styles = useStyles();
 
     const drawerRef = useRef<HTMLDivElement>(null);
+
+    const onClickEdit = (projectId: string): void => {
+        setIsDrawerOpen(false);
+        setEditProjectId(projectId);
+        setModal('editProject', true);
+    };
 
     const projectNavItems = projects.map((project, index) => (
         <NavItem icon={<TabGroup />} key={index} value={project.id}>
@@ -68,7 +74,7 @@ const Navigator = observer((): JSX.Element => {
                         aria-label="Bearbeiten"
                         onClick={(e) => {
                             e.stopPropagation(); // prevent NavItem click
-                            //onEdit(project);
+                            onClickEdit(project.id);
                         }}
                     />
                 </Tooltip>

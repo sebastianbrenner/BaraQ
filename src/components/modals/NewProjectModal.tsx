@@ -8,8 +8,7 @@ import {
     DialogTitle,
     Input,
     Label,
-    Textarea,
-    makeStyles,
+    makeStyles
 } from '@fluentui/react-components';
 import { observer } from 'mobx-react';
 import { nanoid } from 'nanoid';
@@ -32,7 +31,6 @@ const NewProjectModal = observer((): JSX.Element => {
     const { addProject } = useTaskStore();
 
     const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
 
     const onSubmit = (): void => {
         if (!name.trim()) return;
@@ -65,17 +63,9 @@ const NewProjectModal = observer((): JSX.Element => {
                                     required
                                 />
                             </div>
-                            <div className={styles.input}>
-                                <Label htmlFor="projectDesc">Beschreibung</Label>
-                                <Textarea
-                                    id="projectDesc"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                />
-                            </div>
                         </div>
                     </DialogContent>
-                    <DialogActions>
+                    <DialogActions style={{ justifyContent: 'flex-end' }}>
                         <Button appearance="secondary" onClick={() => setModal('newProject', false)}>
                             Abbrechen
                         </Button>

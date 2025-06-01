@@ -1,8 +1,10 @@
-import { Caption1, Card, Dialog, DialogBody, DialogSurface, DialogTitle, makeStyles, Tree, TreeItem, TreeItemLayout } from '@fluentui/react-components';
+import { Caption1, Card, Dialog, DialogBody, DialogSurface, DialogTitle, makeStyles, Switch, Text, Tree, TreeItem, TreeItemLayout } from '@fluentui/react-components';
 import log from 'loglevel';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
 import { useModalStore } from '../../stores/ModalStore';
+import { useStore } from '../../stores/Store';
+import Stack from '../helper/Stack';
 
 const useStyles = makeStyles({
     drawerPanel: {
@@ -34,6 +36,7 @@ const treeItems = [
 
 const SettingsModal = observer((): JSX.Element => {
     const { showSettingsModal, setModal } = useModalStore();
+    const { theme, setTheme } = useStore();
     const [selectedItem, setSelectedItem] = useState<string | null>('general');
     const styles = useStyles();
 
@@ -41,10 +44,14 @@ const SettingsModal = observer((): JSX.Element => {
         switch (selectedItem) {
             case 'general':
                 return (
-                    <>
-                        <Caption1>General Settings</Caption1>
-                        <b>Configure your app settings.</b>
-                    </>
+                    <Stack style={{ alignItems: 'center' }}>
+                        <Text>Theme einstellen</Text>
+                        <Switch
+                            style={{ marginLeft: 'auto' }}
+                            label={theme === 'light' ? 'Light Mode' : 'Dark Mode'}
+                            onClick={() => { setTheme(theme === 'light' ? 'dark' : 'light'); }}
+                            checked={theme === 'light'} />
+                    </Stack>
                 );
             case 'notifications':
                 return (
