@@ -31,6 +31,7 @@ export class TaskStore {
             priority: 'Medium',
             dueDate: new Date('2025-08-15'),
             projectId: 'project1',
+            createdAt: new Date(),
         },
         {
             id: '2',
@@ -40,6 +41,7 @@ export class TaskStore {
             priority: 'Low',
             dueDate: new Date('2025-08-16'),
             projectId: 'project1',
+            createdAt: new Date(),
         },
         {
             id: '3',
@@ -49,6 +51,7 @@ export class TaskStore {
             priority: 'Low',
             dueDate: new Date('2025-08-17'),
             projectId: 'project1',
+            createdAt: new Date(),
         },
         {
             id: '4',
@@ -58,6 +61,7 @@ export class TaskStore {
             priority: 'Medium',
             dueDate: new Date('2025-08-18'),
             projectId: 'project2',
+            createdAt: new Date(),
         },
         {
             id: '5',
@@ -67,6 +71,7 @@ export class TaskStore {
             priority: 'High',
             dueDate: new Date('2025-08-19'),
             projectId: 'project2',
+            createdAt: new Date(),
         },
         {
             id: '6',
@@ -76,6 +81,7 @@ export class TaskStore {
             priority: 'Low',
             dueDate: new Date('2025-08-20'),
             projectId: 'project2',
+            createdAt: new Date(),
         },
         {
             id: '7',
@@ -85,6 +91,7 @@ export class TaskStore {
             priority: 'Medium',
             dueDate: new Date('2025-08-21'),
             projectId: 'project3',
+            createdAt: new Date(),
         },
         {
             id: '8',
@@ -94,6 +101,7 @@ export class TaskStore {
             priority: 'Low',
             dueDate: new Date('2025-08-22'),
             projectId: 'project3',
+            createdAt: new Date(),
         },
         {
             id: '9',
@@ -103,6 +111,7 @@ export class TaskStore {
             priority: 'Low',
             dueDate: new Date('2025-08-23'),
             projectId: 'project3',
+            createdAt: new Date(),
         },
     ];
 

@@ -6,6 +6,7 @@ export type Task = {
     priority: Priority;
     dueDate: Date;
     projectId: string;
+    createdAt: Date;
 };
 
 export type Project = {

@@ -3,6 +3,7 @@ import { ChevronDown20Filled, ChevronUp20Filled } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
 import { useTaskStore } from '../../stores/TaskStore';
+import { useTaskTableStore } from '../../stores/TaskTableStore';
 import { PRIORITIES, type Priority, type Task } from '../../types';
 
 
@@ -27,6 +28,7 @@ const useStyles = makeStyles({
 
 const TaskTable = observer((): JSX.Element => {
     const { selectedProject, updateTask, tasks } = useTaskStore();
+    const { showCompletedTasks } = useTaskTableStore();
     const [editingCell, setEditingCell] = useState<{ rowId: string; column: keyof Task } | null>(null);
 
     // state for table sorting
@@ -147,6 +149,23 @@ const TaskTable = observer((): JSX.Element => {
 
     const styles = useStyles();
 
+    const sortedTask = tasks
+        .filter((item) => item.projectId === selectedProject.id)
+        .filter(item => !item.done || showCompletedTasks)
+        .sort((a, b) => {
+            if (!sortColumn) return 0;
+            const aVal = a[sortColumn];
+            const bVal = b[sortColumn];
+
+            // Convert values to comparable strings or numbers
+            const aStr = aVal instanceof Date ? aVal.getTime() : aVal?.toString() ?? '';
+            const bStr = bVal instanceof Date ? bVal.getTime() : bVal?.toString() ?? '';
+
+            if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
+            if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        })
+
     return (
         <Table aria-label="Editable Task Table" className={styles.table} sortable >
             <TableHeader>
@@ -173,28 +192,13 @@ const TaskTable = observer((): JSX.Element => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {tasks
-                    .filter((item) => item.projectId === selectedProject.id)
-                    .sort((a, b) => {
-                        if (!sortColumn) return 0;
-                        const aVal = a[sortColumn];
-                        const bVal = b[sortColumn];
-
-                        // Convert values to comparable strings or numbers
-                        const aStr = aVal instanceof Date ? aVal.getTime() : aVal?.toString() ?? '';
-                        const bStr = bVal instanceof Date ? bVal.getTime() : bVal?.toString() ?? '';
-
-                        if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
-                        if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
-                        return 0;
-                    })
-                    .map((item) => (
-                        <TableRow key={item.id}>
-                            {columns.map((column) => (
-                                renderCell(item, column.columnKey as keyof Task)
-                            ))}
-                        </TableRow>
-                    ))}
+                {sortedTask.map((item) => (
+                    <TableRow key={item.id}>
+                        {columns.map((column) => (
+                            renderCell(item, column.columnKey as keyof Task)
+                        ))}
+                    </TableRow>
+                ))}
             </TableBody>
         </Table>
     );

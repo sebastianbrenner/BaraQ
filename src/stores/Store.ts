@@ -6,6 +6,7 @@ import type { ModalStore } from './ModalStore';
 import type { NavigationStore } from './NavigationStore';
 import type { SettingsStore } from './SettingsStore';
 import type { TaskStore } from './TaskStore';
+import type { TaskTableStore } from './TaskTableStore';
 
 export class Store {
     // theme
@@ -22,6 +23,7 @@ export class Store {
     navigationStore?: NavigationStore;
     settingsStore?: SettingsStore;
     modalStore?: ModalStore;
+    taskTableStore?: TaskTableStore;
 
     constructor() {
         makeObservable(this, {

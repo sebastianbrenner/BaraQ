@@ -1,7 +1,8 @@
-import { CompoundButton, FluentProvider, makeStyles, webDarkTheme, webLightTheme } from '@fluentui/react-components';
-import { Add28Filled } from '@fluentui/react-icons';
+import { Button, CompoundButton, FluentProvider, makeStyles, Tooltip, webDarkTheme, webLightTheme } from '@fluentui/react-components';
+import { Add28Filled, EyeOffRegular, EyeRegular } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
 import Header from './components/Header';
+import Stack from './components/helper/Stack';
 import Login from './components/Login';
 import EditProjectModal from './components/modals/EditProjectModal';
 import NewProjectModal from './components/modals/NewProjectModal';
@@ -12,6 +13,7 @@ import TaskTable from './components/TaskTable/TaskTable';
 import { useCredentialStore } from './stores/CredentialStore';
 import { useModalStore } from './stores/ModalStore';
 import { useStore } from './stores/Store';
+import { useTaskTableStore } from './stores/TaskTableStore';
 
 const useStyles = makeStyles({
     root: {
@@ -29,11 +31,17 @@ const useStyles = makeStyles({
         overflowY: 'scroll',
         padding: '8px',
     },
+    button: {
+        width: '100px',
+        borderRadius: '50%',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+    },
 });
 
 const App = observer((): JSX.Element => {
     const credentialStore = useCredentialStore();
     const { setModal } = useModalStore();
+    const { showCompletedTasks, setShowCompletedTasks } = useTaskTableStore();
     const { theme } = useStore();
     const styles = useStyles();
 
@@ -50,6 +58,10 @@ const App = observer((): JSX.Element => {
         setModal('newTask', true);
     }
 
+    const onClickShowCompletedTask = (): void => {
+        setShowCompletedTasks(!showCompletedTasks);
+    }
+
     return (
         <FluentProvider theme={theme === 'light' ? webLightTheme : webDarkTheme}>
             <div className={styles.root}>
@@ -60,21 +72,37 @@ const App = observer((): JSX.Element => {
                 <EditProjectModal />
                 <div className={styles.content}>{content}</div>
             </div>
-            <CompoundButton shape="circular"
-                appearance="primary"
-                icon={<Add28Filled />}
-                aria-label="Add task"
-                onClick={onClickNewTaskButton}
+            <Stack
+                direction='column'
                 style={{
                     position: 'fixed',
                     bottom: '2rem',
                     right: '2rem',
-                    height: '52px',
-                    borderRadius: '50%',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                     zIndex: 1000,
+                    alignItems: 'center',
                 }}
-            />
+            >
+                <Tooltip content="Zeige erledigte Aufgaben" relationship="label">
+                    <Button
+                        shape="circular"
+                        appearance="transparent"
+                        icon={showCompletedTasks ? <EyeRegular /> : <EyeOffRegular />}
+                        aria-label="Zeige erledigte Aufgaben"
+                        onClick={onClickShowCompletedTask}
+                        className={styles.button}
+                    />
+                </Tooltip>
+                <Tooltip content="Aufgabe hinzufügen" relationship="label">
+                    <CompoundButton
+                        shape="circular"
+                        appearance="primary"
+                        icon={<Add28Filled />}
+                        aria-label="Aufgabe hinzufügen"
+                        onClick={onClickNewTaskButton}
+                        className={styles.button}
+                    />
+                </Tooltip>
+            </Stack>
         </FluentProvider>
     );
 });
