@@ -28,19 +28,22 @@ const useStyles = makeStyles({
 const NewProjectModal = observer((): JSX.Element => {
     const styles = useStyles();
     const { showNewProjectModal, setModal } = useModalStore();
-    const { addProject } = useTaskStore();
+    const { addProject, setSelectedProject } = useTaskStore();
 
     const [name, setName] = useState('');
 
     const onSubmit = (): void => {
         if (!name.trim()) return;
 
+        const id = nanoid();
         addProject({
-            id: nanoid(),
+            id,
             name,
             createdAt: new Date(),
         });
 
+        setSelectedProject(id);
+        setName('');
         setModal('newProject', false);
     };
 

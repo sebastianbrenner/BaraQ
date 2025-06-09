@@ -5,14 +5,15 @@ import { useState } from 'react';
 import { useTaskStore } from '../../stores/TaskStore';
 import { useTaskTableStore } from '../../stores/TaskTableStore';
 import { PRIORITIES, type Priority, type Task } from '../../types';
+import { ContextMenu } from './ContextMenu';
 
 
 const columns = [
-    { columnKey: 'done', label: 'Done' },
-    { columnKey: 'title', label: 'Title' },
-    { columnKey: 'description', label: 'Description' },
-    { columnKey: 'priority', label: 'Priority' },
-    { columnKey: 'dueDate', label: 'Due date' },
+    { columnKey: 'done', label: 'Erledigt' },
+    { columnKey: 'title', label: 'Titel' },
+    { columnKey: 'description', label: 'Beschreibung' },
+    { columnKey: 'priority', label: 'Priorität' },
+    { columnKey: 'dueDate', label: 'Fälligkeitsdatum' },
 ];
 
 const useStyles = makeStyles({
@@ -28,7 +29,7 @@ const useStyles = makeStyles({
 
 const TaskTable = observer((): JSX.Element => {
     const { selectedProject, updateTask, tasks } = useTaskStore();
-    const { showCompletedTasks } = useTaskTableStore();
+    const { showCompletedTasks, setContextMenuPosition, setShowContextMenu, setContextMenuTask } = useTaskTableStore();
     const [editingCell, setEditingCell] = useState<{ rowId: string; column: keyof Task } | null>(null);
 
     // state for table sorting
@@ -70,6 +71,13 @@ const TaskTable = observer((): JSX.Element => {
                 throw new Error(`Unsupported column: ${column}`);
         }
         updateTask(updatedItem);
+    };
+
+    const handleContextMenu = (event: React.MouseEvent<HTMLTableRowElement, MouseEvent>, item: Task): void => {
+        event.preventDefault();
+        setContextMenuTask(item);
+        setContextMenuPosition({ x: event.clientX, y: event.clientY });
+        setShowContextMenu(true);
     };
 
     const renderCell = (item: Task, column: keyof Task): JSX.Element => {
@@ -167,40 +175,43 @@ const TaskTable = observer((): JSX.Element => {
         })
 
     return (
-        <Table aria-label="Editable Task Table" className={styles.table} sortable >
-            <TableHeader>
-                <TableRow>
-                    {columns.map((column) => {
-                        const isSorted = sortColumn === column.columnKey;
-                        const Icon = isSorted
-                            ? sortDirection === 'asc'
-                                ? ChevronUp20Filled
-                                : ChevronDown20Filled
-                            : null;
-                        return (
-                            <TableHeaderCell
-                                key={column.columnKey}
-                                onClick={() => handleSort(column.columnKey as keyof Task)}
-                                style={{ cursor: 'pointer', userSelect: 'none' }}
-                                className={column.columnKey === 'done' ? styles.smallColumn : undefined}
-                            >
-                                {column.label}
-                                {Icon && <Icon />}
-                            </TableHeaderCell>
-                        )
-                    })}
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {sortedTask.map((item) => (
-                    <TableRow key={item.id}>
-                        {columns.map((column) => (
-                            renderCell(item, column.columnKey as keyof Task)
-                        ))}
+        <>
+            <Table aria-label="Editable Task Table" className={styles.table} sortable>
+                <TableHeader>
+                    <TableRow>
+                        {columns.map((column) => {
+                            const isSorted = sortColumn === column.columnKey;
+                            const Icon = isSorted
+                                ? sortDirection === 'asc'
+                                    ? ChevronUp20Filled
+                                    : ChevronDown20Filled
+                                : null;
+                            return (
+                                <TableHeaderCell
+                                    key={column.columnKey}
+                                    onClick={() => handleSort(column.columnKey as keyof Task)}
+                                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                                    className={column.columnKey === 'done' ? styles.smallColumn : undefined}
+                                >
+                                    {column.label}
+                                    {Icon && <Icon />}
+                                </TableHeaderCell>
+                            );
+                        })}
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {sortedTask.map((item) => (
+                        <TableRow key={item.id} onContextMenu={(e) => handleContextMenu(e, item)}>
+                            {columns.map((column) => (
+                                renderCell(item, column.columnKey as keyof Task)
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            <ContextMenu />
+        </>
     );
 });
 

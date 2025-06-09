@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import Header from './components/Header';
 import Stack from './components/helper/Stack';
 import Login from './components/Login';
+import DeleteTaskModal from './components/modals/DeleteTaskModal';
 import EditProjectModal from './components/modals/EditProjectModal';
 import NewProjectModal from './components/modals/NewProjectModal';
 import NewTaskModal from './components/modals/NewTaskModal';
@@ -68,6 +69,7 @@ const App = observer((): JSX.Element => {
                 <Header />
                 <SettingsModal />
                 <NewTaskModal />
+                <DeleteTaskModal />
                 <NewProjectModal />
                 <EditProjectModal />
                 <div className={styles.content}>{content}</div>

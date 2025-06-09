@@ -1,6 +1,7 @@
 import {
     Avatar,
     makeStyles,
+    Text,
     tokens,
     Tooltip
 } from '@fluentui/react-components';
@@ -9,7 +10,7 @@ import {
     SignOut20Regular, SignOutFilled, TabGroup20Filled, TabGroup20Regular
 } from '@fluentui/react-icons';
 import {
-    AppItem, NavDivider, NavDrawer, NavDrawerBody, NavDrawerFooter, NavDrawerHeader, NavItem, NavSectionHeader, type OnNavItemSelectData
+    NavDivider, NavDrawer, NavDrawerBody, NavDrawerFooter, NavDrawerHeader, NavItem, NavSectionHeader, type OnNavItemSelectData
 } from '@fluentui/react-nav-preview';
 import { observer } from 'mobx-react';
 import { useEffect, useRef, type JSX, type SyntheticEvent } from 'react';
@@ -93,6 +94,16 @@ const Navigator = observer((): JSX.Element => {
         </NavItem>
     );
 
+    /* projectNavItems.push(
+        <NavDivider key={'divider'} />,
+        <Select value={selectedProject.id} onChange={onSelectProject}>
+            <option value={'test'}>test</option>
+            <option value={'test'}>test</option>
+            <option value={'test'}>test</option>
+            <option value={'test'}>test</option>
+        </Select>
+    ); */
+
     // Close the drawer when the user clicks outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent): void => {
@@ -129,14 +140,14 @@ const Navigator = observer((): JSX.Element => {
                 ref={drawerRef}
             >
                 <NavDrawerHeader>
-                    <Stack style={{ alignItems: 'center' }}>
+                    <Stack style={{ alignItems: 'center', padding: '8px' }}>
                         <img src={logo} alt="logo" height={24} />
-                        <AppItem as="a">BaraQ</AppItem>
+                        <Text weight='semibold' size={500}>BaraQ</Text>
                     </Stack>
                 </NavDrawerHeader>
                 <NavDivider />
                 <NavDrawerBody>
-                    <NavSectionHeader key={'projectHeader'}>Project</NavSectionHeader>
+                    <NavSectionHeader key={'projectHeader'}>Projekt</NavSectionHeader>
                     {projectNavItems}
                 </NavDrawerBody>
                 <NavDivider />

@@ -2,10 +2,11 @@ import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
 import { useStore } from './Store';
 
-export type Modal = 'newTask' | 'newProject' | 'editProject' | 'settings';
+export type Modal = 'newTask' | 'deleteTask' | 'newProject' | 'editProject' | 'settings';
 
 export class ModalStore {
     showNewTaskModal: boolean = false;
+    showDeleteTaskModal: boolean = false;
     showNewProjectModal: boolean = false;
     showEditProjectModal: boolean = false;
     showSettingsModal: boolean = false;
@@ -15,6 +16,9 @@ export class ModalStore {
         switch (modal) {
             case 'newTask':
                 this.showNewTaskModal = !this.showNewTaskModal;
+                break;
+            case 'deleteTask':
+                this.showDeleteTaskModal = !this.showDeleteTaskModal;
                 break;
             case 'newProject':
                 this.showNewProjectModal = !this.showNewProjectModal;
@@ -35,6 +39,9 @@ export class ModalStore {
         switch (modal) {
             case 'newTask':
                 this.showNewTaskModal = value;
+                break;
+            case 'deleteTask':
+                this.showDeleteTaskModal = value;
                 break;
             case 'newProject':
                 this.showNewProjectModal = value;

@@ -143,6 +143,14 @@ export class TaskStore {
         }
     };
 
+    deleteTask = (taskId: string): void => {
+        log.debug('TaskStore | deleteTask with Id: ', taskId);
+        const index = this.tasks.findIndex((t) => t.id === taskId);
+        if (index !== -1) {
+            this.tasks.splice(index, 1);
+        }
+    };
+
     setSelectedProject = (projectId: string): void => {
         log.debug('TaskStore | setSelectedProject: ', projectId);
         const newSelection = this.projects.find(project => project.id === projectId);
