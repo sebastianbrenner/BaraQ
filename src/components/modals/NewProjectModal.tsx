@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 
 const NewProjectModal = observer((): JSX.Element => {
     const styles = useStyles();
-    const { showNewProjectModal, setModal } = useModalStore();
+    const { modals: { newProject }, setModal } = useModalStore();
     const { addProject, setSelectedProject } = useTaskStore();
 
     const [name, setName] = useState('');
@@ -49,7 +49,7 @@ const NewProjectModal = observer((): JSX.Element => {
 
     return (
         <Dialog
-            open={showNewProjectModal}
+            open={newProject}
             onOpenChange={(_, data) => setModal('newProject', data.open)}
         >
             <DialogSurface>

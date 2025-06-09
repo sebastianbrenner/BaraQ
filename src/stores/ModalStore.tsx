@@ -5,61 +5,33 @@ import { useStore } from './Store';
 export type Modal = 'newTask' | 'deleteTask' | 'newProject' | 'editProject' | 'settings';
 
 export class ModalStore {
-    showNewTaskModal: boolean = false;
-    showDeleteTaskModal: boolean = false;
-    showNewProjectModal: boolean = false;
-    showEditProjectModal: boolean = false;
-    showSettingsModal: boolean = false;
+    modals: Record<Modal, boolean> = {
+        newTask: false,
+        deleteTask: false,
+        newProject: false,
+        editProject: false,
+        settings: false,
+    };
+
+    constructor() {
+        makeAutoObservable(this);
+        log.debug('ModalStore created');
+    }
 
     toggleModal = (modal: Modal): void => {
-        log.debug('ModalStore | toggleModal: ', modal);
-        switch (modal) {
-            case 'newTask':
-                this.showNewTaskModal = !this.showNewTaskModal;
-                break;
-            case 'deleteTask':
-                this.showDeleteTaskModal = !this.showDeleteTaskModal;
-                break;
-            case 'newProject':
-                this.showNewProjectModal = !this.showNewProjectModal;
-                break;
-            case 'editProject':
-                this.showEditProjectModal = !this.showEditProjectModal;
-                break;
-            case 'settings':
-                this.showSettingsModal = !this.showSettingsModal;
-                break;
-            default:
-                throw new Error(`Unsupported modal: ${modal}`);
+        log.debug('ModalStore | toggleModal:', modal);
+        if (!(modal in this.modals)) {
+            throw new Error(`Unsupported modal: ${modal}`);
         }
+        this.modals[modal] = !this.modals[modal];
     }
 
     setModal = (modal: Modal, value: boolean): void => {
-        log.debug('ModalStore | setModal: ', modal, value);
-        switch (modal) {
-            case 'newTask':
-                this.showNewTaskModal = value;
-                break;
-            case 'deleteTask':
-                this.showDeleteTaskModal = value;
-                break;
-            case 'newProject':
-                this.showNewProjectModal = value;
-                break;
-            case 'editProject':
-                this.showEditProjectModal = value;
-                break;
-            case 'settings':
-                this.showSettingsModal = value;
-                break;
-            default:
-                throw new Error(`Unsupported modal: ${modal}`);
+        log.debug('ModalStore | setModal:', modal, value);
+        if (!(modal in this.modals)) {
+            throw new Error(`Unsupported modal: ${modal}`);
         }
-    }
-
-    constructor() {
-        log.debug('ModalStore created');
-        makeAutoObservable(this);
+        this.modals[modal] = value;
     }
 }
 

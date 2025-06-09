@@ -19,7 +19,7 @@ const useStyles = makeStyles({
 
 
 const NewTaskModal = observer((): JSX.Element => {
-    const { showNewTaskModal, setModal } = useModalStore();
+    const { modals: { newTask }, setModal } = useModalStore();
     const { addTask, projects, selectedProject } = useTaskStore();
     const styles = useStyles();
 
@@ -39,6 +39,7 @@ const NewTaskModal = observer((): JSX.Element => {
             priority: priority as Priority,
             dueDate: new Date(dueDate),
             projectId: projectId,
+            createdAt: new Date(),
         })
         setModal('newTask', false);
     }
@@ -49,7 +50,7 @@ const NewTaskModal = observer((): JSX.Element => {
     }
 
     return (
-        <Dialog open={showNewTaskModal} onOpenChange={(_, data) => setModal('newTask', data.open)} >
+        <Dialog open={newTask} onOpenChange={(_, data) => setModal('newTask', data.open)} >
             <DialogSurface>
                 <DialogBody style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <DialogTitle>

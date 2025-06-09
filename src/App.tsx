@@ -12,7 +12,7 @@ import SettingsModal from './components/modals/SettingsModal';
 import Navigator from './components/Navigator';
 import TaskTable from './components/TaskTable/TaskTable';
 import { useCredentialStore } from './stores/CredentialStore';
-import { useModalStore } from './stores/ModalStore';
+import { useModalStore, type Modal } from './stores/ModalStore';
 import { useStore } from './stores/Store';
 import { useTaskTableStore } from './stores/TaskTableStore';
 
@@ -39,9 +39,18 @@ const useStyles = makeStyles({
     },
 });
 
+// Map modal names to components
+const modalComponents: Record<Modal, React.FC> = {
+    newTask: NewTaskModal,
+    deleteTask: DeleteTaskModal,
+    newProject: NewProjectModal,
+    editProject: EditProjectModal,
+    settings: SettingsModal,
+};
+
 const App = observer((): JSX.Element => {
     const credentialStore = useCredentialStore();
-    const { setModal } = useModalStore();
+    const { modals, setModal } = useModalStore();
     const { showCompletedTasks, setShowCompletedTasks } = useTaskTableStore();
     const { theme } = useStore();
     const styles = useStyles();
@@ -63,15 +72,17 @@ const App = observer((): JSX.Element => {
         setShowCompletedTasks(!showCompletedTasks);
     }
 
+    const openModal = Object.entries(modals).map(([modalKey, isOpen]) => {
+        if (!isOpen) return null;
+        const ModalComponent = modalComponents[modalKey as Modal];
+        return <ModalComponent key={modalKey} />;
+    })
+
     return (
         <FluentProvider theme={theme === 'light' ? webLightTheme : webDarkTheme}>
             <div className={styles.root}>
                 <Header />
-                <SettingsModal />
-                <NewTaskModal />
-                <DeleteTaskModal />
-                <NewProjectModal />
-                <EditProjectModal />
+                {openModal}
                 <div className={styles.content}>{content}</div>
             </div>
             <Stack

@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 
 const DeleteTaskModal = observer((): JSX.Element | null => {
     const styles = useStyles();
-    const { showDeleteTaskModal, setModal } = useModalStore();
+    const { modals: { deleteTask: deleteTaskModal }, setModal } = useModalStore();
     const { deleteTask } = useTaskStore();
     const { contextMenuTask } = useTaskTableStore();
 
@@ -40,7 +40,7 @@ const DeleteTaskModal = observer((): JSX.Element | null => {
 
     return (
         <Dialog
-            open={showDeleteTaskModal}
+            open={deleteTaskModal}
             onOpenChange={(_, data) => setModal('deleteTask', data.open)}
         >
             <DialogSurface>

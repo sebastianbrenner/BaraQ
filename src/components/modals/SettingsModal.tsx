@@ -35,7 +35,7 @@ const treeItems = [
 ];
 
 const SettingsModal = observer((): JSX.Element => {
-    const { showSettingsModal, setModal } = useModalStore();
+    const { modals: { settings }, setModal } = useModalStore();
     const { theme, setTheme } = useStore();
     const [selectedItem, setSelectedItem] = useState<string | null>('general');
     const styles = useStyles();
@@ -91,7 +91,7 @@ const SettingsModal = observer((): JSX.Element => {
     }
 
     return (
-        <Dialog open={showSettingsModal} onOpenChange={(_, data) => setModal('settings', data.open)} >
+        <Dialog open={settings} onOpenChange={(_, data) => setModal('settings', data.open)} >
             <DialogSurface style={{ paddingLeft: '24px' }}>
                 <DialogBody style={{ gridTemplateColumns: 'auto', columnGap: '8px', display: 'flex', width: '100%', height: '100%' }}>
                     <div>

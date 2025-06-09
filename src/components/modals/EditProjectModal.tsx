@@ -36,7 +36,7 @@ const useStyles = makeStyles({
 
 const EditProjectModal = observer((): JSX.Element | null => {
     const styles = useStyles();
-    const { showEditProjectModal, setModal } = useModalStore();
+    const { modals: { editProject }, setModal } = useModalStore();
     const { updateProject, projects } = useTaskStore();
     const { editProjectId } = useNavigationStore();
 
@@ -64,7 +64,7 @@ const EditProjectModal = observer((): JSX.Element | null => {
 
     return (
         <Dialog
-            open={showEditProjectModal}
+            open={editProject}
             onOpenChange={(_, data) => setModal('editProject', data.open)}
         >
             <DialogSurface>
