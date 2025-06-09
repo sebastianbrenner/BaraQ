@@ -4,15 +4,10 @@ import { observer } from 'mobx-react';
 import Header from './components/Header';
 import Stack from './components/helper/Stack';
 import Login from './components/Login';
-import DeleteTaskModal from './components/modals/DeleteTaskModal';
-import EditProjectModal from './components/modals/EditProjectModal';
-import NewProjectModal from './components/modals/NewProjectModal';
-import NewTaskModal from './components/modals/NewTaskModal';
-import SettingsModal from './components/modals/SettingsModal';
 import Navigator from './components/Navigator';
 import TaskTable from './components/TaskTable/TaskTable';
 import { useCredentialStore } from './stores/CredentialStore';
-import { useModalStore, type Modal } from './stores/ModalStore';
+import { modalComponents, useModalStore, type Modal } from './stores/ModalStore';
 import { useStore } from './stores/Store';
 import { useTaskTableStore } from './stores/TaskTableStore';
 
@@ -38,15 +33,6 @@ const useStyles = makeStyles({
         boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
     },
 });
-
-// Map modal names to components
-const modalComponents: Record<Modal, React.FC> = {
-    newTask: NewTaskModal,
-    deleteTask: DeleteTaskModal,
-    newProject: NewProjectModal,
-    editProject: EditProjectModal,
-    settings: SettingsModal,
-};
 
 const App = observer((): JSX.Element => {
     const credentialStore = useCredentialStore();

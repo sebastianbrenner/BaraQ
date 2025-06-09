@@ -23,7 +23,7 @@ const NewTaskModal = observer((): JSX.Element => {
     const { addTask, projects, selectedProject } = useTaskStore();
     const styles = useStyles();
 
-    const [projectId, setrojectId] = useState(selectedProject.id);
+    const [projectId, setProjectId] = useState(selectedProject.id);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [priority, setPriority] = useState<string>(PRIORITIES[0]);
@@ -46,7 +46,7 @@ const NewTaskModal = observer((): JSX.Element => {
 
     const onChangeProject = (_: SelectionEvents, data: OptionOnSelectData): void => {
         if (!data.optionValue) return;
-        setrojectId(data.optionValue);
+        setProjectId(data.optionValue);
     }
 
     return (

@@ -11,7 +11,6 @@ import {
     makeStyles,
     tokens
 } from '@fluentui/react-components';
-import log from 'loglevel';
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { useModalStore } from '../../stores/ModalStore';
@@ -53,13 +52,17 @@ const EditProjectModal = observer((): JSX.Element | null => {
 
     if (!editProjectId) return null;
 
-    const onSubmit = (): void => {
+    const handleSubmit = (): void => {
         if (!name.trim()) return;
         const project = projects.find((p) => p.id === editProjectId);
         if (!project) return;
         project.name = name;
         updateProject(project);
         setModal('editProject', false);
+    };
+
+    const handleDeleteProject = (): void => {
+        setModal('deleteProject', true);
     };
 
     return (
@@ -84,13 +87,13 @@ const EditProjectModal = observer((): JSX.Element | null => {
                         </div>
                     </DialogContent>
                     <DialogActions>
-                        <Button appearance="subtle" className={styles.warningButton} onClick={() => log.debug('DELETE')}>
+                        <Button appearance="subtle" className={styles.warningButton} onClick={handleDeleteProject}>
                             Projekt löschen
                         </Button>
                         <Button appearance="secondary" onClick={() => setModal('editProject', false)} style={{ marginLeft: 'auto' }}>
                             Abbrechen
                         </Button>
-                        <Button appearance="primary" onClick={onSubmit}>
+                        <Button appearance="primary" onClick={handleSubmit}>
                             Projekt aktualisieren
                         </Button>
                     </DialogActions>

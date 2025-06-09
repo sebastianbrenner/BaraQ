@@ -129,6 +129,14 @@ export class TaskStore {
         }
     }
 
+    deleteProject = (projectId: string): void => {
+        log.debug('TaskStore | deleteProject with Id: ', projectId);
+        const index = this.projects.findIndex((p) => p.id === projectId);
+        if (index !== -1) {
+            this.projects.splice(index, 1);
+        }
+    };
+
     addTask = (task: Task): void => {
         log.debug('TaskStore | addTask: ', task);
         this.tasks.push(task);
