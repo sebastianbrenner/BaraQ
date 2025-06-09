@@ -2,11 +2,10 @@ import {
     Avatar,
     makeStyles,
     Text,
-    tokens,
-    Tooltip
+    tokens
 } from '@fluentui/react-components';
 import {
-    AddCircle20Regular, AddCircleFilled, bundleIcon, Edit20Regular,
+    AddCircle20Regular, AddCircleFilled, bundleIcon,
     SignOut20Regular, SignOutFilled, TabGroup20Filled, TabGroup20Regular
 } from '@fluentui/react-icons';
 import {
@@ -50,6 +49,8 @@ const SignOut = bundleIcon(SignOutFilled, SignOut20Regular);
 const TabGroup = bundleIcon(TabGroup20Filled, TabGroup20Regular);
 const AddGroup = bundleIcon(AddCircleFilled, AddCircle20Regular);
 
+const views = ['Tabelle', 'Kanban', 'Flow'];
+
 const Navigator = observer((): JSX.Element => {
     const { username } = useCredentialStore();
     const { setModal } = useModalStore();
@@ -66,10 +67,10 @@ const Navigator = observer((): JSX.Element => {
         setModal('editProject', true);
     };
 
-    const projectNavItems = projects.map((project, index) => (
-        <NavItem icon={<TabGroup />} key={index} value={project.id}>
-            {project.name}
-            <div style={{ marginLeft: 'auto' }}>
+    const viewNavItems = views.map((view, index) => (
+        <NavItem icon={<TabGroup />} key={index} value={view} disabled>
+            {view}
+            {/* <div style={{ marginLeft: 'auto' }}>
                 <Tooltip content="Bearbeiten" relationship="label">
                     <Edit20Regular
                         aria-label="Bearbeiten"
@@ -79,21 +80,9 @@ const Navigator = observer((): JSX.Element => {
                         }}
                     />
                 </Tooltip>
-            </div>
+            </div> */}
         </NavItem>
     ));
-
-    const onClickNewProject = (): void => {
-        setModal('newProject', true);
-    }
-
-    projectNavItems.push(
-        <NavDivider key={'divider'} />,
-        <NavItem icon={<AddGroup />} key={'add'} value={'new'} onClick={onClickNewProject}>
-            Neues Project
-        </NavItem>
-    );
-
     /* projectNavItems.push(
         <NavDivider key={'divider'} />,
         <Select value={selectedProject.id} onChange={onSelectProject}>
@@ -102,6 +91,17 @@ const Navigator = observer((): JSX.Element => {
             <option value={'test'}>test</option>
             <option value={'test'}>test</option>
         </Select>
+    ); */
+
+    /* const onClickNewProject = (): void => {
+        setModal('newProject', true);
+    }
+
+    projectNavItems.push(
+        <NavDivider key={'divider'} />,
+        <NavItem icon={<AddGroup />} key={'add'} value={'new'} onClick={onClickNewProject}>
+            Neues Project
+        </NavItem>
     ); */
 
     // Close the drawer when the user clicks outside
@@ -147,8 +147,8 @@ const Navigator = observer((): JSX.Element => {
                 </NavDrawerHeader>
                 <NavDivider />
                 <NavDrawerBody>
-                    <NavSectionHeader key={'projectHeader'}>Projekt</NavSectionHeader>
-                    {projectNavItems}
+                    <NavSectionHeader key={'viewHeader'}>Ansicht</NavSectionHeader>
+                    {viewNavItems}
                 </NavDrawerBody>
                 <NavDivider />
                 <NavDrawerFooter style={{ backgroundColor: tokens.colorTransparentBackground }}>
