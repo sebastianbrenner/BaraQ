@@ -2,9 +2,10 @@ import { Checkbox, Dropdown, Input, makeStyles, Option, Table, TableBody, TableC
 import { ChevronDown20Filled, ChevronUp20Filled } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
-import { PRIORITIES, type Priority, type Task } from '../../types';
+import { useTaskStore, useTaskTableStore } from '../../../stores/storeHooks';
+import type { Task } from '../../../types';
+import { type Priority, PRIORITIES } from '../../../types';
 import { ContextMenu } from './ContextMenu';
-import { useTaskStore, useTaskTableStore } from '../../stores/storeHooks';
 
 
 const columns = [

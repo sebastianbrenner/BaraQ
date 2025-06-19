@@ -14,7 +14,8 @@ import {
 import { observer } from 'mobx-react';
 import { useEffect, useRef, type JSX, type SyntheticEvent } from 'react';
 import logo from '../assets/logo.png';
-import { useCredentialStore, useNavigationStore, useTaskStore } from '../stores/storeHooks';
+import { useCredentialStore, useNavigationStore, useViewStore } from '../stores/storeHooks';
+import { views } from '../stores/ViewStore';
 import Stack from './helper/Stack';
 
 // styles for navigator
@@ -45,20 +46,17 @@ const useStyles = makeStyles({
 const SignOut = bundleIcon(SignOutFilled, SignOut20Regular);
 const TabGroup = bundleIcon(TabGroup20Filled, TabGroup20Regular);
 
-const views = ['Tabelle', 'Kanban', 'Flow'];
-
 const Navigator = observer((): JSX.Element => {
     const { username } = useCredentialStore();
     const { isDrawerOpen, setIsDrawerOpen } = useNavigationStore();
-    const taskStore = useTaskStore();
-    const { selectedProject, setSelectedProject } = taskStore;
     const styles = useStyles();
+    const { selectedView, setSelectedView } = useViewStore();
 
     const drawerRef = useRef<HTMLDivElement>(null);
 
     const viewNavItems = views.map((view, index) => (
-        <NavItem icon={<TabGroup />} key={index} value={view} disabled>
-            {view}
+        <NavItem icon={<TabGroup />} key={index} value={view.viewKey} >
+            {view.label}
             {/* <div style={{ marginLeft: 'auto' }}>
                 <Tooltip content="Bearbeiten" relationship="label">
                     <Edit20Regular
@@ -114,14 +112,14 @@ const Navigator = observer((): JSX.Element => {
         // close the drawer when anything is selected
         setIsDrawerOpen(false);
         if (data.value === 'new') return;
-        setSelectedProject(data.value);
+        setSelectedView(data.value);
     };
 
     return (
         <div className={styles.root}>
             <NavDrawer
                 onNavItemSelect={onNavItemSelect}
-                selectedValue={selectedProject.id}
+                selectedValue={selectedView}
                 defaultSelectedCategoryValue=""
                 open={isDrawerOpen}
                 className={styles.nav}

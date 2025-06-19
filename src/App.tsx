@@ -5,10 +5,10 @@ import Header from './components/Header';
 import Stack from './components/helper/Stack';
 import Login from './components/Login';
 import Navigator from './components/Navigator';
-import TaskTable from './components/TaskTable/TaskTable';
 import { modalComponents, type Modal } from './stores/ModalStore';
 import { useStore } from './stores/Store';
-import { useCredentialStore, useModalStore, useTaskTableStore } from './stores/storeHooks';
+import { useCredentialStore, useModalStore, useTaskTableStore, useViewStore } from './stores/storeHooks';
+import { views } from './stores/ViewStore';
 
 const useStyles = makeStyles({
     root: {
@@ -18,7 +18,6 @@ const useStyles = makeStyles({
         height: '100dvh',
     },
     form: {
-        // Stack the label above the field (with 2px gap per the design system)
         '> div': { display: 'flex', flexDirection: 'column', gap: '2px' },
     },
     content: {
@@ -35,17 +34,21 @@ const useStyles = makeStyles({
 
 const App = observer((): JSX.Element => {
     const credentialStore = useCredentialStore();
+    const { selectedView } = useViewStore();
     const { modals, setModal } = useModalStore();
     const { showCompletedTasks, setShowCompletedTasks } = useTaskTableStore();
     const { theme } = useStore();
     const styles = useStyles();
+
+    const view = views.find((view) => view.viewKey === selectedView)?.component;
+    if (!view) throw new Error(`View '${selectedView}' not found`);
 
     const content: JSX.Element = !credentialStore.username ? (
         <Login />
     ) : (
         <div style={{ height: '100%' }}>
             <Navigator />
-            <TaskTable />
+            {view}
         </div>
     );
 
