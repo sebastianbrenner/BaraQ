@@ -1,7 +1,6 @@
 import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
 import type { Project, Task } from '../types';
-import { useStore } from './Store';
 
 export class TaskStore {
     public projects: Project[] = [
@@ -171,8 +170,3 @@ export class TaskStore {
         makeAutoObservable(this);
     }
 }
-
-export const useTaskStore = (): TaskStore => {
-    const store = useStore();
-    return store.taskStore!;
-};

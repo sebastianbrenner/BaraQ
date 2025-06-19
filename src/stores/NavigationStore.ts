@@ -1,6 +1,5 @@
 import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
-import { useStore } from './Store';
 
 export class NavigationStore {
     isDrawerOpen: boolean = false;
@@ -21,8 +20,3 @@ export class NavigationStore {
         makeAutoObservable(this);
     }
 }
-
-export const useNavigationStore = (): NavigationStore => {
-    const store = useStore();
-    return store.navigationStore!;
-};

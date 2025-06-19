@@ -17,9 +17,8 @@ import {
 } from '@fluentui/react-components';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
-import { useModalStore } from '../../stores/ModalStore';
-import { useTaskStore } from '../../stores/TaskStore';
 import Stack from '../helper/Stack';
+import { useModalStore, useTaskStore } from '../../stores/storeHooks';
 
 const useStyles = makeStyles({
     warningButton: {

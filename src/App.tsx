@@ -6,10 +6,9 @@ import Stack from './components/helper/Stack';
 import Login from './components/Login';
 import Navigator from './components/Navigator';
 import TaskTable from './components/TaskTable/TaskTable';
-import { useCredentialStore } from './stores/CredentialStore';
-import { modalComponents, useModalStore, type Modal } from './stores/ModalStore';
+import { modalComponents, type Modal } from './stores/ModalStore';
 import { useStore } from './stores/Store';
-import { useTaskTableStore } from './stores/TaskTableStore';
+import { useCredentialStore, useModalStore, useTaskTableStore } from './stores/storeHooks';
 
 const useStyles = makeStyles({
     root: {

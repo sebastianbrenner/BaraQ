@@ -1,6 +1,5 @@
 import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
-import { useStore } from './Store';
 
 export class CredentialStore {
     username?: string = 'test';
@@ -17,8 +16,3 @@ export class CredentialStore {
         makeAutoObservable(this);
     }
 }
-
-export const useCredentialStore = (): CredentialStore => {
-    const store = useStore();
-    return store.credentialStore!;
-};

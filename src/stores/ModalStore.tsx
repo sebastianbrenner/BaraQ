@@ -6,7 +6,6 @@ import EditProjectModal from '../components/modals/EditProjectModal';
 import NewProjectModal from '../components/modals/NewProjectModal';
 import NewTaskModal from '../components/modals/NewTaskModal';
 import SettingsModal from '../components/modals/SettingsModal';
-import { useStore } from './Store';
 
 export type Modal = 'newTask' | 'deleteTask' | 'newProject' | 'editProject' | 'deleteProject' | 'settings';
 
@@ -58,8 +57,3 @@ export class ModalStore {
         });
     }
 }
-
-export const useModalStore = (): ModalStore => {
-    const store = useStore();
-    return store.modalStore!;
-};

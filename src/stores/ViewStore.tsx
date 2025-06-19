@@ -1,10 +1,10 @@
 import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
 
-export class SettingsStore {
+export class ViewStore {
 
     constructor() {
-        log.debug('SettingsStore created');
+        log.debug('ViewStore created');
         makeAutoObservable(this);
     }
 }

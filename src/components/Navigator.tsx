@@ -5,7 +5,7 @@ import {
     tokens
 } from '@fluentui/react-components';
 import {
-    AddCircle20Regular, AddCircleFilled, bundleIcon,
+    bundleIcon,
     SignOut20Regular, SignOutFilled, TabGroup20Filled, TabGroup20Regular
 } from '@fluentui/react-icons';
 import {
@@ -14,10 +14,7 @@ import {
 import { observer } from 'mobx-react';
 import { useEffect, useRef, type JSX, type SyntheticEvent } from 'react';
 import logo from '../assets/logo.png';
-import { useCredentialStore } from '../stores/CredentialStore';
-import { useModalStore } from '../stores/ModalStore';
-import { useNavigationStore } from '../stores/NavigationStore';
-import { useTaskStore } from '../stores/TaskStore';
+import { useCredentialStore, useNavigationStore, useTaskStore } from '../stores/storeHooks';
 import Stack from './helper/Stack';
 
 // styles for navigator
@@ -47,25 +44,17 @@ const useStyles = makeStyles({
 // bundled icons
 const SignOut = bundleIcon(SignOutFilled, SignOut20Regular);
 const TabGroup = bundleIcon(TabGroup20Filled, TabGroup20Regular);
-const AddGroup = bundleIcon(AddCircleFilled, AddCircle20Regular);
 
 const views = ['Tabelle', 'Kanban', 'Flow'];
 
 const Navigator = observer((): JSX.Element => {
     const { username } = useCredentialStore();
-    const { setModal } = useModalStore();
-    const { isDrawerOpen, setIsDrawerOpen, setEditProjectId } = useNavigationStore();
+    const { isDrawerOpen, setIsDrawerOpen } = useNavigationStore();
     const taskStore = useTaskStore();
-    const { projects, selectedProject, setSelectedProject } = taskStore;
+    const { selectedProject, setSelectedProject } = taskStore;
     const styles = useStyles();
 
     const drawerRef = useRef<HTMLDivElement>(null);
-
-    const onClickEdit = (projectId: string): void => {
-        setIsDrawerOpen(false);
-        setEditProjectId(projectId);
-        setModal('editProject', true);
-    };
 
     const viewNavItems = views.map((view, index) => (
         <NavItem icon={<TabGroup />} key={index} value={view} disabled>
@@ -100,7 +89,7 @@ const Navigator = observer((): JSX.Element => {
     projectNavItems.push(
         <NavDivider key={'divider'} />,
         <NavItem icon={<AddGroup />} key={'add'} value={'new'} onClick={onClickNewProject}>
-            Neues Project
+            Neues Projectw
         </NavItem>
     ); */
 

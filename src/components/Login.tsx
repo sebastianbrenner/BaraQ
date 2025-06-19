@@ -1,7 +1,7 @@
 import { Button, Input, Label, makeStyles, useId } from '@fluentui/react-components';
 import { useRef } from 'react';
-import { useCredentialStore } from '../stores/CredentialStore';
 import Stack from './helper/Stack';
+import { useCredentialStore } from '../stores/storeHooks';
 
 const useStyles = makeStyles({
     form: {

@@ -13,8 +13,7 @@ import {
 import { observer } from 'mobx-react';
 import { nanoid } from 'nanoid';
 import { useState } from 'react';
-import { useModalStore } from '../../stores/ModalStore';
-import { useTaskStore } from '../../stores/TaskStore';
+import { useModalStore, useTaskStore } from '../../stores/storeHooks';
 
 const useStyles = makeStyles({
     input: {

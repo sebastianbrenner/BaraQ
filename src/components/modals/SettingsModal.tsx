@@ -2,8 +2,8 @@ import { Caption1, Card, Dialog, DialogBody, DialogSurface, DialogTitle, makeSty
 import log from 'loglevel';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
-import { useModalStore } from '../../stores/ModalStore';
 import { useStore } from '../../stores/Store';
+import { useModalStore } from '../../stores/storeHooks';
 import Stack from '../helper/Stack';
 
 const useStyles = makeStyles({

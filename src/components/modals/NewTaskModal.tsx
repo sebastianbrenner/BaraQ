@@ -3,10 +3,9 @@ import log from 'loglevel';
 import { observer } from 'mobx-react';
 import { nanoid } from 'nanoid';
 import { useState } from 'react';
-import { useModalStore } from '../../stores/ModalStore';
-import { useTaskStore } from '../../stores/TaskStore';
 import { PRIORITIES, type Priority } from '../../types';
 import Stack from '../helper/Stack';
+import { useModalStore, useTaskStore } from '../../stores/storeHooks';
 
 const useStyles = makeStyles({
     input: {
