@@ -8,24 +8,25 @@ import type { Task } from '../../../types';
 import { type Priority, PRIORITIES } from '../../../types';
 import { ContextMenu } from './ContextMenu';
 
+// Column definitions
+const columns = {
+    done: 'Erledigt',
+    title: 'Titel',
+    description: 'Beschreibung',
+    priority: 'Priorität',
+    predecessorIds: 'Vorgänger',
+    successorIds: 'Nachfolger',
+    dueDate: 'Fälligkeitsdatum',
+}
 
-const columns = [
-    { columnKey: 'done', label: 'Erledigt' },
-    { columnKey: 'title', label: 'Titel' },
-    { columnKey: 'description', label: 'Beschreibung' },
-    { columnKey: 'priority', label: 'Priorität' },
-    { columnKey: 'predecessorIds', label: 'Vorgänger' },
-    { columnKey: 'successorIds', label: 'Nachfolger' },
-    { columnKey: 'dueDate', label: 'Fälligkeitsdatum' },
-];
-
+// Styles
 const useStyles = makeStyles({
     table: {
         minWidth: '510px',
     },
     smallColumn: {
-        width: '40px',
-        maxWidth: '40px',
+        width: 'min-content',
+        //maxWidth: '50px',
         padding: '0 4px',
     },
     dropdown: {
@@ -106,6 +107,88 @@ const TaskTable = observer((): JSX.Element => {
         setShowContextMenu(true);
     };
 
+    const renderDoneCell = (item: Task, column: keyof Task, value: boolean, handleChange: (item: Task, column: keyof Task, value: string | boolean) => void): JSX.Element => {
+        return (
+            <Checkbox
+                checked={value}
+                onChange={(_, data) => handleChange(item, column, data.checked)}
+            />
+        );
+    };
+
+    const renderDueDateCell = (item: Task, column: keyof Task, value: Date | null, handleChange: (item: Task, column: keyof Task, value: string | boolean) => void): JSX.Element => {
+        const stringValue = value ? value.toISOString().substring(0, 10) : '';
+        return (
+            <Input
+                type="date"
+                value={stringValue}
+                autoFocus
+                onBlur={() => setEditingCell(null)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        setEditingCell(null);
+                    }
+                }}
+                onChange={(e) => handleChange(item, column, e.target.value)}
+            />
+        );
+    }
+
+    const renderPriorityCell = (item: Task, column: keyof Task, value: Priority, handleChange: (item: Task, column: keyof Task, value: string | boolean) => void): JSX.Element => {
+        return (
+            <Dropdown
+                value={value}
+                onOptionSelect={(_, data) => handleChange(item, column, data.optionValue || '')}
+                onBlur={() => setEditingCell(null)}
+                autoFocus
+                onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        setEditingCell(null);
+                    }
+                }}
+                selectedOptions={[value]}
+                className={styles.dropdown}
+            >
+                {PRIORITIES.map((priority) => (
+                    <Option key={priority} >
+                        {priority}
+                    </Option>
+                ))}
+            </Dropdown>
+        );
+    }
+
+    const renderDepedencyCells = (item: Task, column: keyof Task, value: string[], handleChange: (item: Task, column: keyof Task, value: string | boolean) => void): JSX.Element => {
+        const stringValue = value as string[];
+        const valueStrings = stringValue.map((id) => { if (getTaskById(id)) return getTaskById(id)!.title }).join(', ');
+        return (
+            <Dropdown
+                value={valueStrings}
+                onOptionSelect={(_, data) => { handleChange(item, column, data.optionValue || '') }}
+                onBlur={() => setEditingCell(null)}
+                autoFocus
+                open
+                onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        setEditingCell(null);
+                    }
+                }}
+                selectedOptions={stringValue}
+                className={styles.dropdown}
+            >
+                {selectedProjectTasks.map((task) => (
+                    <Option key={task.id} value={task.id} text={task.title}>
+                        {task.title}
+                    </Option>
+                ))}
+            </Dropdown>
+        );
+    }
+
+    // Function to render a table cell
     const renderCell = (item: Task, column: keyof Task): JSX.Element => {
         const isEditing = editingCell?.rowId === item.id && editingCell?.column === column;
         const value = item[column];
@@ -114,87 +197,19 @@ const TaskTable = observer((): JSX.Element => {
         // Render cell content when in edit mode
         if (isEditing) {
             let stringValue;
-            let valueStrings;
             switch (column) {
                 case 'done':
-                    cellContent = (
-                        <Checkbox
-                            checked={value as boolean}
-                            onChange={(_, data) => handleChange(item, column, data.checked)}
-                        />
-                    );
+                    cellContent = renderDoneCell(item, column, value as boolean, handleChange);
                     break;
                 case 'dueDate':
-                    if (value instanceof Date) {
-                        stringValue = value.toISOString().substring(0, 10);
-                    } else {
-                        stringValue = value.toString() ?? '';
-                    }
-                    cellContent =
-                        <Input
-                            type="date"
-                            value={stringValue}
-                            autoFocus
-                            onBlur={() => setEditingCell(null)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Escape') {
-                                    e.preventDefault();
-                                    setEditingCell(null);
-                                }
-                            }}
-                            onChange={(e) => handleChange(item, column, e.target.value)}
-                        />;
+                    cellContent = renderDueDateCell(item, column, value as Date | null, handleChange);
                     break;
                 case 'priority':
-                    stringValue = value as string;
-                    cellContent =
-                        <Dropdown
-                            value={stringValue as string}
-                            onOptionSelect={(_, data) => handleChange(item, column, data.optionValue || '')}
-                            onBlur={() => setEditingCell(null)}
-                            autoFocus
-                            onKeyDown={(e) => {
-                                if (e.key === 'Escape') {
-                                    e.preventDefault();
-                                    setEditingCell(null);
-                                }
-                            }}
-                            selectedOptions={[stringValue as string]}
-                            className={styles.dropdown}
-                        >
-                            {PRIORITIES.map((priority) => (
-                                <Option key={priority} >
-                                    {priority}
-                                </Option>
-                            ))}
-                        </Dropdown>
+                    cellContent = renderPriorityCell(item, column, value as Priority, handleChange);
                     break;
                 case 'predecessorIds':
                 case 'successorIds':
-                    stringValue = value as string[];
-                    valueStrings = stringValue.map((id) => { if (getTaskById(id)) return getTaskById(id)!.title }).join(', ');
-                    cellContent =
-                        <Dropdown
-                            value={valueStrings}
-                            onOptionSelect={(_, data) => { handleChange(item, column, data.optionValue || '') }}
-                            onBlur={() => setEditingCell(null)}
-                            autoFocus
-                            open
-                            onKeyDown={(e) => {
-                                if (e.key === 'Escape') {
-                                    e.preventDefault();
-                                    setEditingCell(null);
-                                }
-                            }}
-                            selectedOptions={stringValue}
-                            className={styles.dropdown}
-                        >
-                            {selectedProjectTasks.map((task) => (
-                                <Option key={task.id} value={task.id} text={task.title}>
-                                    {task.title}
-                                </Option>
-                            ))}
-                        </Dropdown>
+                    cellContent = renderDepedencyCells(item, column, value as string[], handleChange);
                     break;
                 default:
                     stringValue = value?.toString() ?? '';
@@ -267,11 +282,11 @@ const TaskTable = observer((): JSX.Element => {
 
     return (
         <>
-            <Table aria-label="Editable Task Table" className={styles.table} sortable>
+            <Table aria-label="Task Table" className={styles.table} sortable>
                 <TableHeader>
                     <TableRow>
-                        {columns.map((column) => {
-                            const isSorted = sortColumn === column.columnKey;
+                        {Object.keys(columns).map((columnKey) => {
+                            const isSorted = sortColumn === columnKey;
                             const Icon = isSorted
                                 ? sortDirection === 'asc'
                                     ? ChevronUp20Filled
@@ -279,12 +294,12 @@ const TaskTable = observer((): JSX.Element => {
                                 : null;
                             return (
                                 <TableHeaderCell
-                                    key={column.columnKey}
-                                    onClick={() => handleSort(column.columnKey as keyof Task)}
+                                    key={columnKey}
+                                    onClick={() => handleSort(columnKey as keyof Task)}
                                     style={{ cursor: 'pointer', userSelect: 'none' }}
-                                    className={column.columnKey === 'done' ? styles.smallColumn : undefined}
+                                    className={columnKey === 'done' ? styles.smallColumn : undefined}
                                 >
-                                    {column.label}
+                                    {columns[columnKey as keyof typeof columns]}
                                     {Icon && <Icon />}
                                 </TableHeaderCell>
                             );
@@ -294,8 +309,8 @@ const TaskTable = observer((): JSX.Element => {
                 <TableBody>
                     {sortedTask.map((item) => (
                         <TableRow key={item.id} onContextMenu={(e) => handleContextMenu(e, item)}>
-                            {columns.map((column) => (
-                                renderCell(item, column.columnKey as keyof Task)
+                            {Object.keys(columns).map((columnKey) => (
+                                renderCell(item, columnKey as keyof Task)
                             ))}
                         </TableRow>
                     ))}

@@ -17,6 +17,6 @@ export type Project = {
     createdAt: Date;
 };
 
-export const PRIORITIES = ['Low', 'Medium', 'High'] as const;
+export const PRIORITIES = ['Niedrig', 'Mittel', 'Hoch'] as const;
 
 export type Priority = (typeof PRIORITIES)[number];
