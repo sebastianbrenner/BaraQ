@@ -61,7 +61,7 @@ const TaskTable = observer((): JSX.Element => {
 
     const handleChange = (item: Task, column: keyof Task, value: string | boolean): void => {
         const updatedTask = toJS(item);
-        let referencedTask;
+        let referencedTask: Task | undefined;
         let updatedReferencedTask;
         switch (column) {
             case 'title':
@@ -80,11 +80,20 @@ const TaskTable = observer((): JSX.Element => {
                 break;
             case 'predecessorIds':
                 referencedTask = getTaskById(value as string);
-                if (!referencedTask) return;
-                updatedTask[column] = [...updatedTask[column], referencedTask.id];
-                updatedReferencedTask = toJS(referencedTask);
-                updatedReferencedTask.successorIds = [...updatedReferencedTask.successorIds, item.id];
-                updateTask(updatedReferencedTask);
+                if (referencedTask === undefined) return;
+                // id not referenced yet
+                if (!updatedTask[column].includes(referencedTask.id)) {
+                    updatedTask[column] = [...updatedTask[column], referencedTask!.id];
+                    updatedReferencedTask = toJS(referencedTask);
+                    updatedReferencedTask.successorIds = [...updatedReferencedTask.successorIds, item.id];
+                    updateTask(updatedReferencedTask);
+                } else {
+                    // id already referenced
+                    updatedTask[column] = updatedTask[column].filter((id) => id !== referencedTask!.id);
+                    updatedReferencedTask = toJS(referencedTask);
+                    updatedReferencedTask.successorIds = updatedReferencedTask.successorIds.filter((id) => id !== item.id);
+                    updateTask(updatedReferencedTask);
+                }
                 break;
             case 'successorIds':
                 referencedTask = getTaskById(value as string);
@@ -163,13 +172,19 @@ const TaskTable = observer((): JSX.Element => {
     const renderDepedencyCells = (item: Task, column: keyof Task, value: string[], handleChange: (item: Task, column: keyof Task, value: string | boolean) => void): JSX.Element => {
         const stringValue = value as string[];
         const valueStrings = stringValue.map((id) => { if (getTaskById(id)) return getTaskById(id)!.title }).join(', ');
+        // filter out current task
+        const noCurrentTask = selectedProjectTasks.filter((task) => task.id !== item.id);
+        // filter out tasks that are already done
+        const noDoneTasks = noCurrentTask.filter((task) => task.done === false);
+        // filter out tasks that are already in the predecessorIds or successorIds
+        const noAlreadyLinkedTasks = noDoneTasks.filter((task) => column === 'successorIds' ? !task.successorIds.includes(item.id) : !task.predecessorIds.includes(item.id));
         return (
             <Dropdown
                 value={valueStrings}
                 onOptionSelect={(_, data) => { handleChange(item, column, data.optionValue || '') }}
                 onBlur={() => setEditingCell(null)}
                 autoFocus
-                open
+                open={noAlreadyLinkedTasks.length > 0}
                 onKeyDown={(e) => {
                     if (e.key === 'Escape') {
                         e.preventDefault();
@@ -179,7 +194,7 @@ const TaskTable = observer((): JSX.Element => {
                 selectedOptions={stringValue}
                 className={styles.dropdown}
             >
-                {selectedProjectTasks.map((task) => (
+                {noAlreadyLinkedTasks.filter((task) => task.id !== item.id && task.done === false).map((task) => (
                     <Option key={task.id} value={task.id} text={task.title}>
                         {task.title}
                     </Option>

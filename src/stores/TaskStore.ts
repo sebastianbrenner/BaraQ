@@ -169,7 +169,7 @@ export class TaskStore {
     };
 
     getTaskById = (taskId: string): Task | undefined => {
-        log.debug('TaskStore | getTaskById with Id: ', taskId);
+        log.trace('TaskStore | getTaskById with Id: ', taskId);
         return this.tasks.find((t) => t.id === taskId);
     };
 
@@ -194,7 +194,7 @@ export class TaskStore {
     }
 
     constructor() {
-        log.debug('TaskStore created');
+        log.trace('TaskStore created');
         makeAutoObservable(this, {
             selectedProjectTasks: computed
         });
