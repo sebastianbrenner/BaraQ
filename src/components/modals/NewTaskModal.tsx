@@ -3,9 +3,10 @@ import log from 'loglevel';
 import { observer } from 'mobx-react';
 import { nanoid } from 'nanoid';
 import { useState } from 'react';
+import { useModalStore, useTaskStore } from '../../stores/storeHooks';
 import { PRIORITIES, type Priority } from '../../types';
 import Stack from '../helper/Stack';
-import { useModalStore, useTaskStore } from '../../stores/storeHooks';
+import ReferenceEditor from '../ReferenceEditor';
 
 const useStyles = makeStyles({
     input: {
@@ -27,6 +28,8 @@ const NewTaskModal = observer((): JSX.Element => {
     const [description, setDescription] = useState('');
     const [priority, setPriority] = useState<string>(PRIORITIES[0]);
     const [dueDate, setDueDate] = useState<string>('');
+    const [predecessorIds, setPredecessorIds] = useState<string[]>([]);
+    const [successorIds, setSuccessorIds] = useState<string[]>([]);
 
     const onAddNewTask = (): void => {
         log.debug('onAddNewTask', projectId, title, description, priority, dueDate);
@@ -39,6 +42,8 @@ const NewTaskModal = observer((): JSX.Element => {
             dueDate: new Date(dueDate),
             projectId: projectId,
             createdAt: new Date(),
+            predecessorIds: predecessorIds,
+            successorIds: successorIds,
         })
         setModal('newTask', false);
     }
@@ -46,6 +51,11 @@ const NewTaskModal = observer((): JSX.Element => {
     const onChangeProject = (_: SelectionEvents, data: OptionOnSelectData): void => {
         if (!data.optionValue) return;
         setProjectId(data.optionValue);
+    }
+
+    const onChangeReferences = (references: { predecessorIds: string[], successorIds: string[] }): void => {
+        setPredecessorIds(references.predecessorIds);
+        setSuccessorIds(references.successorIds);
     }
 
     return (
@@ -95,11 +105,12 @@ const NewTaskModal = observer((): JSX.Element => {
                                     <Input type="date" id={'dueDate'} onChange={(e) => setDueDate(e.target.value)} />
                                 </div>
                             </div>
+                            <ReferenceEditor projectId={projectId} onChangeReferences={onChangeReferences} />
                         </div>
                     </DialogContent>
                     <DialogActions style={{ alignSelf: 'flex-end' }}>
-                        <Button appearance="secondary">Cancel</Button>
-                        <Button appearance="primary" onClick={onAddNewTask}>Create Task</Button>
+                        <Button appearance="secondary">Abbrechen</Button>
+                        <Button appearance="primary" onClick={onAddNewTask}>Erstellen</Button>
                     </DialogActions>
                 </DialogBody>
             </DialogSurface>

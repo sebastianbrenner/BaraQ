@@ -1,5 +1,6 @@
-import { Checkbox, Dropdown, Input, makeStyles, Option, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow } from '@fluentui/react-components';
+import { Checkbox, Dropdown, Input, makeStyles, Option, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow, Tag, TagGroup } from '@fluentui/react-components';
 import { ChevronDown20Filled, ChevronUp20Filled } from '@fluentui/react-icons';
+import { toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
 import { useTaskStore, useTaskTableStore } from '../../../stores/storeHooks';
@@ -13,6 +14,8 @@ const columns = [
     { columnKey: 'title', label: 'Titel' },
     { columnKey: 'description', label: 'Beschreibung' },
     { columnKey: 'priority', label: 'Priorität' },
+    { columnKey: 'predecessorIds', label: 'Vorgänger' },
+    { columnKey: 'successorIds', label: 'Nachfolger' },
     { columnKey: 'dueDate', label: 'Fälligkeitsdatum' },
 ];
 
@@ -24,12 +27,17 @@ const useStyles = makeStyles({
         width: '40px',
         maxWidth: '40px',
         padding: '0 4px',
+    },
+    dropdown: {
+        minWidth: '100%',
     }
 });
 
+
 const TaskTable = observer((): JSX.Element => {
-    const { selectedProject, updateTask, tasks } = useTaskStore();
+    const { selectedProject, updateTask, tasks, selectedProjectTasks, getTaskById } = useTaskStore();
     const { showCompletedTasks, setContextMenuPosition, setShowContextMenu, setContextMenuTask } = useTaskTableStore();
+    // call setEditingCell(null) to exit edit mode
     const [editingCell, setEditingCell] = useState<{ rowId: string; column: keyof Task } | null>(null);
 
     // state for table sorting
@@ -51,26 +59,44 @@ const TaskTable = observer((): JSX.Element => {
     };
 
     const handleChange = (item: Task, column: keyof Task, value: string | boolean): void => {
-        const updatedItem = item;
+        const updatedTask = toJS(item);
+        let referencedTask;
+        let updatedReferencedTask;
         switch (column) {
             case 'title':
             case 'description':
             case 'projectId':
-                updatedItem[column] = value as string;
+                updatedTask[column] = value as string;
                 break;
             case 'done':
-                updatedItem[column] = value as boolean;
+                updatedTask[column] = value as boolean;
                 break;
             case 'priority':
-                updatedItem[column] = value as Priority;
+                updatedTask[column] = value as Priority;
                 break;
             case 'dueDate':
-                updatedItem[column] = new Date(value as string);
+                updatedTask[column] = new Date(value as string);
+                break;
+            case 'predecessorIds':
+                referencedTask = getTaskById(value as string);
+                if (!referencedTask) return;
+                updatedTask[column] = [...updatedTask[column], referencedTask.id];
+                updatedReferencedTask = toJS(referencedTask);
+                updatedReferencedTask.successorIds = [...updatedReferencedTask.successorIds, item.id];
+                updateTask(updatedReferencedTask);
+                break;
+            case 'successorIds':
+                referencedTask = getTaskById(value as string);
+                if (!referencedTask) return;
+                updatedTask[column] = [...updatedTask[column], referencedTask.id];
+                updatedReferencedTask = toJS(referencedTask);
+                updatedReferencedTask.predecessorIds = [...updatedReferencedTask.predecessorIds, item.id];
+                updateTask(updatedReferencedTask);
                 break;
             default:
                 throw new Error(`Unsupported column: ${column}`);
         }
-        updateTask(updatedItem);
+        updateTask(updatedTask);
     };
 
     const handleContextMenu = (event: React.MouseEvent<HTMLTableRowElement, MouseEvent>, item: Task): void => {
@@ -83,73 +109,138 @@ const TaskTable = observer((): JSX.Element => {
     const renderCell = (item: Task, column: keyof Task): JSX.Element => {
         const isEditing = editingCell?.rowId === item.id && editingCell?.column === column;
         const value = item[column];
-        let cellContent: JSX.Element;
+        let cellContent: JSX.Element = <>{value}</>;
 
+        // Render cell content when in edit mode
         if (isEditing) {
-            const inputType = column === 'dueDate' ? 'date' : 'text';
-            const stringValue = inputType === 'date' && value instanceof Date
-                ? value.toISOString().substring(0, 10)
-                : (value?.toString() ?? '');
-
-            if (column === 'priority') {
-                cellContent =
-                    <Dropdown
-                        value={stringValue}
-                        onOptionSelect={(_, data) => handleChange(item, column, data.optionValue || '')}
-                        onBlur={() => setEditingCell(null)}
-                        autoFocus
-                        onKeyDown={(e) => {
-                            if (e.key === 'Escape') {
-                                e.preventDefault();
-                                setEditingCell(null);
-                            }
-                        }}
-                        selectedOptions={[stringValue]}
-                    >
-                        {PRIORITIES.map((priority) => (
-                            <Option key={priority} >
-                                {priority}
-                            </Option>
-                        ))}
-                    </Dropdown>
-            } else {
-                cellContent =
-                    <Input
-                        type={inputType}
-                        value={stringValue}
-                        autoFocus
-                        onBlur={() => setEditingCell(null)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Escape') {
-                                e.preventDefault();
-                                setEditingCell(null);
-                            }
-                        }}
-                        onChange={(e) => handleChange(item, column, e.target.value)}
-                    />;
+            let stringValue;
+            let valueStrings;
+            switch (column) {
+                case 'done':
+                    cellContent = (
+                        <Checkbox
+                            checked={value as boolean}
+                            onChange={(_, data) => handleChange(item, column, data.checked)}
+                        />
+                    );
+                    break;
+                case 'dueDate':
+                    if (value instanceof Date) {
+                        stringValue = value.toISOString().substring(0, 10);
+                    } else {
+                        stringValue = value.toString() ?? '';
+                    }
+                    cellContent =
+                        <Input
+                            type="date"
+                            value={stringValue}
+                            autoFocus
+                            onBlur={() => setEditingCell(null)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Escape') {
+                                    e.preventDefault();
+                                    setEditingCell(null);
+                                }
+                            }}
+                            onChange={(e) => handleChange(item, column, e.target.value)}
+                        />;
+                    break;
+                case 'priority':
+                    stringValue = value as string;
+                    cellContent =
+                        <Dropdown
+                            value={stringValue as string}
+                            onOptionSelect={(_, data) => handleChange(item, column, data.optionValue || '')}
+                            onBlur={() => setEditingCell(null)}
+                            autoFocus
+                            onKeyDown={(e) => {
+                                if (e.key === 'Escape') {
+                                    e.preventDefault();
+                                    setEditingCell(null);
+                                }
+                            }}
+                            selectedOptions={[stringValue as string]}
+                            className={styles.dropdown}
+                        >
+                            {PRIORITIES.map((priority) => (
+                                <Option key={priority} >
+                                    {priority}
+                                </Option>
+                            ))}
+                        </Dropdown>
+                    break;
+                case 'predecessorIds':
+                case 'successorIds':
+                    stringValue = value as string[];
+                    valueStrings = stringValue.map((id) => { if (getTaskById(id)) return getTaskById(id)!.title }).join(', ');
+                    cellContent =
+                        <Dropdown
+                            value={valueStrings}
+                            onOptionSelect={(_, data) => { handleChange(item, column, data.optionValue || '') }}
+                            onBlur={() => setEditingCell(null)}
+                            autoFocus
+                            open
+                            onKeyDown={(e) => {
+                                if (e.key === 'Escape') {
+                                    e.preventDefault();
+                                    setEditingCell(null);
+                                }
+                            }}
+                            selectedOptions={stringValue}
+                            className={styles.dropdown}
+                        >
+                            {selectedProjectTasks.map((task) => (
+                                <Option key={task.id} value={task.id} text={task.title}>
+                                    {task.title}
+                                </Option>
+                            ))}
+                        </Dropdown>
+                    break;
+                default:
+                    stringValue = value?.toString() ?? '';
+                    cellContent =
+                        <Input
+                            value={stringValue}
+                            autoFocus
+                            onBlur={() => setEditingCell(null)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Escape') {
+                                    e.preventDefault();
+                                    setEditingCell(null);
+                                }
+                            }}
+                            onChange={(e) => handleChange(item, column, e.target.value)}
+                        />;
             }
-        } else {
-            if (column === 'done') {
-                cellContent = (
-                    <Checkbox
-                        checked={value as boolean}
-                        onChange={(ev, data) => handleChange(item, column, data.checked)}
-                    />
-                );
-            } else {
-                cellContent = (
-                    <span >
-                        {column === 'dueDate' && value instanceof Date ? value.toDateString() : (value as string)}
-                    </span>
-                );
-            }
+        }
 
-            if (column === 'done') {
-                return (
-                    <TableCell key={item.id + column} style={{ cursor: 'pointer' }}>
-                        {cellContent}
-                    </TableCell>
-                );
+        // Render cell content when not in edit mode
+        if (!isEditing) {
+            switch (column) {
+                case 'done':
+                    cellContent = (
+                        <Checkbox
+                            checked={value as boolean}
+                            onChange={(ev, data) => handleChange(item, column, data.checked)}
+                        />
+                    );
+                    break;
+                case 'predecessorIds':
+                case 'successorIds':
+                    cellContent = (
+                        <TagGroup role="list">
+                            {(value as string[]).map((id) => (
+                                <Tag key={id}>{getTaskById(id)!.title}</Tag>
+                            ))}
+                        </TagGroup>
+                    )
+                    break;
+                default:
+                    cellContent = (
+                        <span >
+                            {column === 'dueDate' && value instanceof Date ? value.toLocaleDateString('de-DE') : (value as string)}
+                        </span>
+                    );
             }
         }
         return <TableCell key={item.id + column} onClick={() => handleCellClick(item.id, column)} style={{ cursor: 'pointer' }}>{cellContent}</TableCell>

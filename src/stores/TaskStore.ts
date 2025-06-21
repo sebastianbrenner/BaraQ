@@ -1,5 +1,5 @@
 import log from 'loglevel';
-import { makeAutoObservable } from 'mobx';
+import { computed, makeAutoObservable } from 'mobx';
 import type { Project, Task } from '../types';
 
 export class TaskStore {
@@ -31,6 +31,8 @@ export class TaskStore {
             dueDate: new Date('2025-08-15'),
             projectId: 'project1',
             createdAt: new Date(),
+            predecessorIds: [],
+            successorIds: [],
         },
         {
             id: '2',
@@ -41,6 +43,8 @@ export class TaskStore {
             dueDate: new Date('2025-08-16'),
             projectId: 'project1',
             createdAt: new Date(),
+            predecessorIds: [],
+            successorIds: [],
         },
         {
             id: '3',
@@ -51,6 +55,8 @@ export class TaskStore {
             dueDate: new Date('2025-08-17'),
             projectId: 'project1',
             createdAt: new Date(),
+            predecessorIds: [],
+            successorIds: [],
         },
         {
             id: '4',
@@ -61,6 +67,8 @@ export class TaskStore {
             dueDate: new Date('2025-08-18'),
             projectId: 'project2',
             createdAt: new Date(),
+            predecessorIds: [],
+            successorIds: [],
         },
         {
             id: '5',
@@ -71,6 +79,8 @@ export class TaskStore {
             dueDate: new Date('2025-08-19'),
             projectId: 'project2',
             createdAt: new Date(),
+            predecessorIds: [],
+            successorIds: [],
         },
         {
             id: '6',
@@ -81,6 +91,8 @@ export class TaskStore {
             dueDate: new Date('2025-08-20'),
             projectId: 'project2',
             createdAt: new Date(),
+            predecessorIds: [],
+            successorIds: [],
         },
         {
             id: '7',
@@ -91,6 +103,8 @@ export class TaskStore {
             dueDate: new Date('2025-08-21'),
             projectId: 'project3',
             createdAt: new Date(),
+            predecessorIds: [],
+            successorIds: [],
         },
         {
             id: '8',
@@ -101,6 +115,8 @@ export class TaskStore {
             dueDate: new Date('2025-08-22'),
             projectId: 'project3',
             createdAt: new Date(),
+            predecessorIds: [],
+            successorIds: [],
         },
         {
             id: '9',
@@ -111,6 +127,8 @@ export class TaskStore {
             dueDate: new Date('2025-08-23'),
             projectId: 'project3',
             createdAt: new Date(),
+            predecessorIds: [],
+            successorIds: [],
         },
     ];
 
@@ -150,6 +168,11 @@ export class TaskStore {
         }
     };
 
+    getTaskById = (taskId: string): Task | undefined => {
+        log.debug('TaskStore | getTaskById with Id: ', taskId);
+        return this.tasks.find((t) => t.id === taskId);
+    };
+
     deleteTask = (taskId: string): void => {
         log.debug('TaskStore | deleteTask with Id: ', taskId);
         const index = this.tasks.findIndex((t) => t.id === taskId);
@@ -165,8 +188,15 @@ export class TaskStore {
         this.selectedProject = newSelection;
     };
 
+    get selectedProjectTasks(): Task[] {
+        if (!this.selectedProject) return [];
+        return this.tasks.filter(task => task.projectId === this.selectedProject.id);
+    }
+
     constructor() {
         log.debug('TaskStore created');
-        makeAutoObservable(this);
+        makeAutoObservable(this, {
+            selectedProjectTasks: computed
+        });
     }
 }

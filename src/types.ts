@@ -7,6 +7,8 @@ export type Task = {
     dueDate: Date;
     projectId: string;
     createdAt: Date;
+    predecessorIds: string[];
+    successorIds: string[];
 };
 
 export type Project = {
