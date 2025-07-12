@@ -20,7 +20,28 @@ export const modalComponents: Record<Modal, React.FC> = {
     settings: SettingsModal,
 };
 
+/**
+ * ModalStore is a store for managing modal dialogs.
+ *
+ * It provides methods for toggling, setting and closing all modals.
+ * The modals are stored in a Record<Modal, boolean> object where
+ * the key is the modal type and the value indicates whether the modal is open or not.
+ *
+ * Example usage:
+ *  - To toggle a modal, use the `toggleModal` method:
+ *      modalStore.toggleModal('newTask');
+ *  - To set a modal to a specific state, use the `setModal` method:
+ *      modalStore.setModal('newTask', true);
+ *  - To close all modals, use the `closeAllModals` method:
+ *      modalStore.closeAllModals();
+ *
+ * @class ModalStore
+ */
 export class ModalStore {
+    /**
+     * Record of modals with their open state
+     * @type {Record<Modal, boolean>}
+     */
     modals: Record<Modal, boolean> = {
         newTask: false,
         deleteTask: false,
@@ -30,11 +51,10 @@ export class ModalStore {
         settings: false,
     };
 
-    constructor() {
-        makeAutoObservable(this);
-        log.debug('ModalStore created');
-    }
-
+    /**
+     * Toggles a modal
+     * @param {Modal} modal - The modal to toggle
+     */
     toggleModal = (modal: Modal): void => {
         log.debug('ModalStore | toggleModal:', modal);
         if (!(modal in this.modals)) {
@@ -43,6 +63,11 @@ export class ModalStore {
         this.modals[modal] = !this.modals[modal];
     }
 
+    /**
+     * Sets a modal to a specific state
+     * @param {Modal} modal - The modal to set
+     * @param {boolean} value - The state to set the modal to
+     */
     setModal = (modal: Modal, value: boolean): void => {
         log.debug('ModalStore | setModal:', modal, value);
         if (!(modal in this.modals)) {
@@ -51,10 +76,21 @@ export class ModalStore {
         this.modals[modal] = value;
     }
 
+    /**
+     * Closes all modals
+     */
     closeAllModals = (): void => {
         log.debug('ModalStore | closeAll modals');
         Object.keys(this.modals).forEach((key) => {
             this.modals[key as Modal] = false;
         });
+    }
+
+    /**
+     * Creates a new ModalStore
+     */
+    constructor() {
+        log.trace('ModalStore created');
+        makeAutoObservable(this);
     }
 }

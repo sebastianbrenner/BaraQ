@@ -3,6 +3,20 @@ import { computed, makeAutoObservable } from 'mobx';
 
 import type { Project, Task } from '../types/types';
 
+/**
+ * This class represents the application's data store for tasks.
+ *
+ * It holds the list of tasks, the selected project and the list of projects.
+ * It provides methods to add, update and delete tasks and projects.
+ *
+ * You can use the `getTaskById` method to retrieve a task by its id.
+ *
+ * The `selectedProjectTasks` property returns an array of tasks that belong to the selected project.
+ *
+ * The `setSelectedProject` method can be used to change the selected project.
+ *
+ * @class TaskStore
+ */
 export class TaskStore {
     public projects: Project[] = [
         {

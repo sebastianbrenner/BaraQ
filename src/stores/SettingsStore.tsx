@@ -4,7 +4,7 @@ import { makeAutoObservable } from 'mobx';
 export class SettingsStore {
 
     constructor() {
-        log.debug('SettingsStore created');
+        log.trace('SettingsStore created');
         makeAutoObservable(this);
     }
 }
