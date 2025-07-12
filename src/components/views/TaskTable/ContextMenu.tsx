@@ -17,7 +17,8 @@ import {
     DocumentArrowRightRegular
 } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
-import { useTaskTableStore, useTaskStore, useModalStore } from '../../../stores/storeHooks';
+
+import { useModalStore, useTaskStore, useTaskTableStore } from '../../../stores/storeHooks';
 
 const useStyles = makeStyles({
     dangerItem: {

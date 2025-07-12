@@ -12,7 +12,8 @@ import {
     NavDivider, NavDrawer, NavDrawerBody, NavDrawerFooter, NavDrawerHeader, NavItem, NavSectionHeader, type OnNavItemSelectData
 } from '@fluentui/react-nav-preview';
 import { observer } from 'mobx-react';
-import { useEffect, useRef, type JSX, type SyntheticEvent } from 'react';
+import { type JSX, type SyntheticEvent, useEffect, useRef } from 'react';
+
 import logo from '../assets/logo.png';
 import { useCredentialStore, useNavigationStore, useViewStore } from '../stores/storeHooks';
 import { views } from '../stores/ViewStore';
@@ -55,7 +56,7 @@ const Navigator = observer((): JSX.Element => {
     const drawerRef = useRef<HTMLDivElement>(null);
 
     const viewNavItems = views.map((view, index) => (
-        <NavItem icon={<TabGroup />} key={index} value={view.viewKey} >
+        <NavItem icon={<TabGroup />} key={index} value={view.viewKey} disabled={view.viewKey === 'flow'} onClick={() => setSelectedView(view.viewKey)}>
             {view.label}
             {/* <div style={{ marginLeft: 'auto' }}>
                 <Tooltip content="Bearbeiten" relationship="label">

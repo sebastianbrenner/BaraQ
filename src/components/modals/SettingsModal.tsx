@@ -2,6 +2,7 @@ import { Caption1, Card, Dialog, DialogBody, DialogSurface, DialogTitle, makeSty
 import log from 'loglevel';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
+
 import { useStore } from '../../stores/Store';
 import { useModalStore } from '../../stores/storeHooks';
 import Stack from '../helper/Stack';
@@ -77,18 +78,17 @@ const SettingsModal = observer((): JSX.Element => {
         }
     };
 
-    const renderTreeItem = (): JSX.Element[] => {
-        return treeItems.map((item) =>
-        (
-            <TreeItem
-                itemType="leaf"
-                value={item.key}
-                onClick={() => { setSelectedItem(item.key) }}
-                key={item.key}>
-                <TreeItemLayout style={{ paddingLeft: 0, fontWeight: selectedItem === item.key ? 'bold' : 'normal' }}>{item.label}</TreeItemLayout>
-            </TreeItem>
-        ));
-    }
+    const renderTreeItem = (): JSX.Element[] => treeItems.map((item) =>
+    (
+        <TreeItem
+            itemType="leaf"
+            value={item.key}
+            //onClick={() => { setSelectedItem(item.key) }}
+            key={item.key}
+        >
+            <TreeItemLayout style={{ paddingLeft: 0, fontWeight: selectedItem === item.key ? 'bold' : 'normal' }}>{item.label}</TreeItemLayout>
+        </TreeItem>
+    ))
 
     return (
         <Dialog open={settings} onOpenChange={(_, data) => setModal('settings', data.open)} >

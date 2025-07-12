@@ -1,5 +1,6 @@
 import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
+
 import DeleteProjectModal from '../components/modals/DeleteProjectModal';
 import DeleteTaskModal from '../components/modals/DeleteTaskModal';
 import EditProjectModal from '../components/modals/EditProjectModal';

@@ -1,11 +1,12 @@
 import { Button, CompoundButton, FluentProvider, makeStyles, Tooltip, webDarkTheme, webLightTheme } from '@fluentui/react-components';
 import { Add28Filled, EyeOffRegular, EyeRegular } from '@fluentui/react-icons';
 import { observer } from 'mobx-react';
+
 import Header from './components/Header';
 import Stack from './components/helper/Stack';
 import Login from './components/Login';
 import Navigator from './components/Navigator';
-import { modalComponents, type Modal } from './stores/ModalStore';
+import { type Modal, modalComponents } from './stores/ModalStore';
 import { useStore } from './stores/Store';
 import { useCredentialStore, useModalStore, useTaskTableStore, useViewStore } from './stores/storeHooks';
 import { views } from './stores/ViewStore';

@@ -13,7 +13,8 @@ import {
 } from '@fluentui/react-components';
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { useModalStore, useTaskStore, useNavigationStore } from '../../stores/storeHooks';
+
+import { useModalStore, useNavigationStore, useTaskStore } from '../../stores/storeHooks';
 
 const useStyles = makeStyles({
     input: {

@@ -1,10 +1,11 @@
-import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Dropdown, Input, Label, makeStyles, Option, Textarea, type OptionOnSelectData, type SelectionEvents } from '@fluentui/react-components';
+import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Dropdown, Input, Label, makeStyles, Option, type OptionOnSelectData, type SelectionEvents, Textarea } from '@fluentui/react-components';
 import log from 'loglevel';
 import { observer } from 'mobx-react';
 import { nanoid } from 'nanoid';
 import { useState } from 'react';
+
 import { useModalStore, useTaskStore } from '../../stores/storeHooks';
-import { PRIORITIES, type Priority } from '../../types';
+import { PRIORITIES, type Priority } from '../../types/types';
 import Stack from '../helper/Stack';
 import ReferenceEditor from '../ReferenceEditor';
 
@@ -40,10 +41,10 @@ const NewTaskModal = observer((): JSX.Element => {
             done: false,
             priority: priority as Priority,
             dueDate: new Date(dueDate),
-            projectId: projectId,
+            projectId,
             createdAt: new Date(),
-            predecessorIds: predecessorIds,
-            successorIds: successorIds,
+            predecessorIds,
+            successorIds,
         })
         setModal('newTask', false);
     }

@@ -1,6 +1,7 @@
 import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
-import type { Task } from '../types';
+
+import type { Task } from '../types/types';
 
 export class TaskTableStore {
     showCompletedTasks: boolean = false;

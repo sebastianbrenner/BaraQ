@@ -10,15 +10,16 @@ import {
     Dropdown,
     makeStyles,
     Option,
-    Text,
-    tokens,
     type OptionOnSelectData,
-    type SelectionEvents
+    type SelectionEvents,
+    Text,
+    tokens
 } from '@fluentui/react-components';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
-import Stack from '../helper/Stack';
+
 import { useModalStore, useTaskStore } from '../../stores/storeHooks';
+import Stack from '../helper/Stack';
 
 const useStyles = makeStyles({
     warningButton: {

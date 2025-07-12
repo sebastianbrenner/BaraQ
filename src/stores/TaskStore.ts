@@ -1,6 +1,7 @@
 import log from 'loglevel';
 import { computed, makeAutoObservable } from 'mobx';
-import type { Project, Task } from '../types';
+
+import type { Project, Task } from '../types/types';
 
 export class TaskStore {
     public projects: Project[] = [

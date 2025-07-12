@@ -1,12 +1,14 @@
-import { Checkbox, Dropdown, Input, makeStyles, Option, Table, TableBody, TableCell, TableHeader, TableHeaderCell, TableRow, Tag, TagGroup } from '@fluentui/react-components';
+import { makeStyles, Table, TableBody, TableHeader, TableHeaderCell, TableRow } from '@fluentui/react-components';
 import { ChevronDown20Filled, ChevronUp20Filled } from '@fluentui/react-icons';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
+
 import { useTaskStore, useTaskTableStore } from '../../../stores/storeHooks';
-import type { Task } from '../../../types';
-import { type Priority, PRIORITIES } from '../../../types';
+import type { Task } from '../../../types/types';
+import { type Priority } from '../../../types/types';
 import { ContextMenu } from './ContextMenu';
+import renderCell from './renderCell';
 
 // Column definitions
 const columns = {
@@ -35,8 +37,75 @@ const useStyles = makeStyles({
 });
 
 
+export type renderCellProps = {
+    item: Task,
+    column: keyof Task,
+    getTaskById: (id: string) => Task | undefined,
+    setEditingCell: (cell: { rowId: string, column: keyof Task } | null) => void,
+    handleChange: (item: Task, column: keyof Task, value: string | boolean) => void
+    handleCellClick: (rowId: string, column: keyof Task) => void
+    editingCell?: { rowId: string, column: keyof Task } | null,
+}
+/**
+ * Renders a cell in the task table, supporting both view and edit modes.
+ * Depending on the column type and editing status, different cell components are rendered.
+ *
+ * @param item The task to be displayed or edited.
+ * @param column The column key indicating which field of the task is being rendered.
+ * @param setEditingCell Function to set the current editing cell.
+ * @param getTaskById Function to retrieve task details by ID.
+ * @param handleChange Function to handle changes to the task's value.
+ * @param handleCellClick Function to handle cell click events for entering edit mode.
+ * @param editingCell The current cell being edited, if any.
+ * @returns The JSX element representing the table cell.
+ */
+
+const updateReferenceIds = (
+    item: Task,
+    column: 'predecessorIds' | 'successorIds',
+    targetId: string,
+    getTaskById: (id: string) => Task | undefined,
+    updateTask: (task: Task) => void
+): void => {
+    const referencedTask = getTaskById(targetId);
+    if (!referencedTask) return;
+
+    const updatedItem = toJS(item);
+    const updatedReferenced = toJS(referencedTask);
+
+    const hasReference = updatedItem[column].includes(targetId);
+
+    if (column === 'predecessorIds') {
+        updatedItem.predecessorIds = hasReference
+            ? updatedItem.predecessorIds.filter(id => id !== targetId)
+            : [...updatedItem.predecessorIds, targetId];
+
+        updatedReferenced.successorIds = hasReference
+            ? updatedReferenced.successorIds.filter(id => id !== item.id)
+            : [...updatedReferenced.successorIds, item.id];
+    } else {
+        updatedItem.successorIds = hasReference
+            ? updatedItem.successorIds.filter(id => id !== targetId)
+            : [...updatedItem.successorIds, targetId];
+
+        updatedReferenced.predecessorIds = hasReference
+            ? updatedReferenced.predecessorIds.filter(id => id !== item.id)
+            : [...updatedReferenced.predecessorIds, item.id];
+    }
+
+    updateTask(updatedReferenced);
+    updateTask(updatedItem);
+};
+
+/**
+ * TaskTable component.
+ *
+ * Displays a table of tasks. Supports sorting and filtering.
+ *
+ * @returns The JSX element representing the task table.
+ */
 const TaskTable = observer((): JSX.Element => {
-    const { selectedProject, updateTask, tasks, selectedProjectTasks, getTaskById } = useTaskStore();
+    const { selectedProject, updateTask, tasks, getTaskById } = useTaskStore();
     const { showCompletedTasks, setContextMenuPosition, setShowContextMenu, setContextMenuTask } = useTaskTableStore();
     // call setEditingCell(null) to exit edit mode
     const [editingCell, setEditingCell] = useState<{ rowId: string; column: keyof Task } | null>(null);
@@ -61,8 +130,6 @@ const TaskTable = observer((): JSX.Element => {
 
     const handleChange = (item: Task, column: keyof Task, value: string | boolean): void => {
         const updatedTask = toJS(item);
-        let referencedTask: Task | undefined;
-        let updatedReferencedTask;
         switch (column) {
             case 'title':
             case 'description':
@@ -79,30 +146,9 @@ const TaskTable = observer((): JSX.Element => {
                 updatedTask[column] = new Date(value as string);
                 break;
             case 'predecessorIds':
-                referencedTask = getTaskById(value as string);
-                if (referencedTask === undefined) return;
-                // id not referenced yet
-                if (!updatedTask[column].includes(referencedTask.id)) {
-                    updatedTask[column] = [...updatedTask[column], referencedTask!.id];
-                    updatedReferencedTask = toJS(referencedTask);
-                    updatedReferencedTask.successorIds = [...updatedReferencedTask.successorIds, item.id];
-                    updateTask(updatedReferencedTask);
-                } else {
-                    // id already referenced
-                    updatedTask[column] = updatedTask[column].filter((id) => id !== referencedTask!.id);
-                    updatedReferencedTask = toJS(referencedTask);
-                    updatedReferencedTask.successorIds = updatedReferencedTask.successorIds.filter((id) => id !== item.id);
-                    updateTask(updatedReferencedTask);
-                }
-                break;
             case 'successorIds':
-                referencedTask = getTaskById(value as string);
-                if (!referencedTask) return;
-                updatedTask[column] = [...updatedTask[column], referencedTask.id];
-                updatedReferencedTask = toJS(referencedTask);
-                updatedReferencedTask.predecessorIds = [...updatedReferencedTask.predecessorIds, item.id];
-                updateTask(updatedReferencedTask);
-                break;
+                updateReferenceIds(item, column, value as string, getTaskById, updateTask);
+                return;
             default:
                 throw new Error(`Unsupported column: ${column}`);
         }
@@ -116,169 +162,9 @@ const TaskTable = observer((): JSX.Element => {
         setShowContextMenu(true);
     };
 
-    const renderDoneCell = (item: Task, column: keyof Task, value: boolean, handleChange: (item: Task, column: keyof Task, value: string | boolean) => void): JSX.Element => {
-        return (
-            <Checkbox
-                checked={value}
-                onChange={(_, data) => handleChange(item, column, data.checked)}
-            />
-        );
-    };
-
-    const renderDueDateCell = (item: Task, column: keyof Task, value: Date | null, handleChange: (item: Task, column: keyof Task, value: string | boolean) => void): JSX.Element => {
-        const stringValue = value ? value.toISOString().substring(0, 10) : '';
-        return (
-            <Input
-                type="date"
-                value={stringValue}
-                autoFocus
-                onBlur={() => setEditingCell(null)}
-                onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                        e.preventDefault();
-                        setEditingCell(null);
-                    }
-                }}
-                onChange={(e) => handleChange(item, column, e.target.value)}
-            />
-        );
-    }
-
-    const renderPriorityCell = (item: Task, column: keyof Task, value: Priority, handleChange: (item: Task, column: keyof Task, value: string | boolean) => void): JSX.Element => {
-        return (
-            <Dropdown
-                value={value}
-                onOptionSelect={(_, data) => handleChange(item, column, data.optionValue || '')}
-                onBlur={() => setEditingCell(null)}
-                autoFocus
-                onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                        e.preventDefault();
-                        setEditingCell(null);
-                    }
-                }}
-                selectedOptions={[value]}
-                className={styles.dropdown}
-            >
-                {PRIORITIES.map((priority) => (
-                    <Option key={priority} >
-                        {priority}
-                    </Option>
-                ))}
-            </Dropdown>
-        );
-    }
-
-    const renderDepedencyCells = (item: Task, column: keyof Task, value: string[], handleChange: (item: Task, column: keyof Task, value: string | boolean) => void): JSX.Element => {
-        const stringValue = value as string[];
-        const valueStrings = stringValue.map((id) => { if (getTaskById(id)) return getTaskById(id)!.title }).join(', ');
-        // filter out current task
-        const noCurrentTask = selectedProjectTasks.filter((task) => task.id !== item.id);
-        // filter out tasks that are already done
-        const noDoneTasks = noCurrentTask.filter((task) => task.done === false);
-        // filter out tasks that are already in the predecessorIds or successorIds
-        const noAlreadyLinkedTasks = noDoneTasks.filter((task) => column === 'successorIds' ? !task.successorIds.includes(item.id) : !task.predecessorIds.includes(item.id));
-        return (
-            <Dropdown
-                value={valueStrings}
-                onOptionSelect={(_, data) => { handleChange(item, column, data.optionValue || '') }}
-                onBlur={() => setEditingCell(null)}
-                autoFocus
-                open={noAlreadyLinkedTasks.length > 0}
-                onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                        e.preventDefault();
-                        setEditingCell(null);
-                    }
-                }}
-                selectedOptions={stringValue}
-                className={styles.dropdown}
-            >
-                {noAlreadyLinkedTasks.filter((task) => task.id !== item.id && task.done === false).map((task) => (
-                    <Option key={task.id} value={task.id} text={task.title}>
-                        {task.title}
-                    </Option>
-                ))}
-            </Dropdown>
-        );
-    }
-
-    // Function to render a table cell
-    const renderCell = (item: Task, column: keyof Task): JSX.Element => {
-        const isEditing = editingCell?.rowId === item.id && editingCell?.column === column;
-        const value = item[column];
-        let cellContent: JSX.Element = <>{value}</>;
-
-        // Render cell content when in edit mode
-        if (isEditing) {
-            let stringValue;
-            switch (column) {
-                case 'done':
-                    cellContent = renderDoneCell(item, column, value as boolean, handleChange);
-                    break;
-                case 'dueDate':
-                    cellContent = renderDueDateCell(item, column, value as Date | null, handleChange);
-                    break;
-                case 'priority':
-                    cellContent = renderPriorityCell(item, column, value as Priority, handleChange);
-                    break;
-                case 'predecessorIds':
-                case 'successorIds':
-                    cellContent = renderDepedencyCells(item, column, value as string[], handleChange);
-                    break;
-                default:
-                    stringValue = value?.toString() ?? '';
-                    cellContent =
-                        <Input
-                            value={stringValue}
-                            autoFocus
-                            onBlur={() => setEditingCell(null)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Escape') {
-                                    e.preventDefault();
-                                    setEditingCell(null);
-                                }
-                            }}
-                            onChange={(e) => handleChange(item, column, e.target.value)}
-                        />;
-            }
-        }
-
-        // Render cell content when not in edit mode
-        if (!isEditing) {
-            switch (column) {
-                case 'done':
-                    cellContent = (
-                        <Checkbox
-                            checked={value as boolean}
-                            onChange={(ev, data) => handleChange(item, column, data.checked)}
-                        />
-                    );
-                    break;
-                case 'predecessorIds':
-                case 'successorIds':
-                    cellContent = (
-                        <TagGroup role="list">
-                            {(value as string[]).map((id) => (
-                                <Tag key={id}>{getTaskById(id)!.title}</Tag>
-                            ))}
-                        </TagGroup>
-                    )
-                    break;
-                default:
-                    cellContent = (
-                        <span >
-                            {column === 'dueDate' && value instanceof Date ? value.toLocaleDateString('de-DE') : (value as string)}
-                        </span>
-                    );
-            }
-        }
-        return <TableCell key={item.id + column} onClick={() => handleCellClick(item.id, column)} style={{ cursor: 'pointer' }}>{cellContent}</TableCell>
-    };
-
     const styles = useStyles();
 
-    const sortedTask = tasks
+    const sortedTasks = tasks
         .filter((item) => item.projectId === selectedProject.id)
         .filter(item => !item.done || showCompletedTasks)
         .sort((a, b) => {
@@ -293,7 +179,7 @@ const TaskTable = observer((): JSX.Element => {
             if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
             if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
             return 0;
-        })
+        });
 
     return (
         <>
@@ -322,10 +208,10 @@ const TaskTable = observer((): JSX.Element => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {sortedTask.map((item) => (
+                    {sortedTasks.map((item) => (
                         <TableRow key={item.id} onContextMenu={(e) => handleContextMenu(e, item)}>
                             {Object.keys(columns).map((columnKey) => (
-                                renderCell(item, columnKey as keyof Task)
+                                renderCell({ item, column: columnKey as keyof Task, setEditingCell, getTaskById, handleChange, handleCellClick, editingCell })
                             ))}
                         </TableRow>
                     ))}

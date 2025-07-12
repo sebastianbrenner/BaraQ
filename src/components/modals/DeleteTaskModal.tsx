@@ -10,6 +10,7 @@ import {
     tokens
 } from '@fluentui/react-components';
 import { observer } from 'mobx-react';
+
 import { useModalStore, useTaskStore, useTaskTableStore } from '../../stores/storeHooks';
 
 const useStyles = makeStyles({

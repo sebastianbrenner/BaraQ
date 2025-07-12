@@ -1,11 +1,13 @@
 import { Text } from '@fluentui/react-components';
 import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
+
+import KanbanBoard from '../components/views/Kanban/KanbanBoard';
 import TaskTable from '../components/views/TaskTable/TaskTable';
 
 export const views = [
     { viewKey: 'table', label: 'Tabelle', component: <TaskTable /> },
-    { viewKey: 'kanban', label: 'Kanban', component: <Text>kanban</Text> },
+    { viewKey: 'kanban', label: '🚧 Kanban 🚧', component: <KanbanBoard /> },
     { viewKey: 'flow', label: 'Flow', component: <Text>flow</Text> },
 ];
 

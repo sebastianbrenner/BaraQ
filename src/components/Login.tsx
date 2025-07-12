@@ -1,7 +1,8 @@
 import { Button, Input, Label, makeStyles, useId } from '@fluentui/react-components';
 import { useRef } from 'react';
-import Stack from './helper/Stack';
+
 import { useCredentialStore } from '../stores/storeHooks';
+import Stack from './helper/Stack';
 
 const useStyles = makeStyles({
     form: {
@@ -28,11 +29,11 @@ const Login = (): JSX.Element => {
         <form noValidate autoComplete="off" className={styles.form}>
             <Stack direction="column">
                 <Stack direction="column" gap={0}>
-                    <Label htmlFor={usernameId}>Username</Label>
+                    <Label htmlFor={usernameId}>Benutzername</Label>
                     <Input type="text" id={usernameId} ref={usernameRef} />
                 </Stack>
                 <Stack direction="column" gap={0}>
-                    <Label htmlFor={passwordId}>Password</Label>
+                    <Label htmlFor={passwordId}>Passwort</Label>
                     <Input type="password" id={passwordId} ref={passwordRef} />
                 </Stack>
                 <Button appearance="primary" onClick={onClickLogin}>

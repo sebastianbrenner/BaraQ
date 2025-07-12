@@ -1,5 +1,6 @@
-import { List, ListItem, makeStyles, SearchBox, Tab, TabList, type InputOnChangeData, type SearchBoxChangeEvent, type SelectionItemId, type SelectTabData, type SelectTabEvent } from '@fluentui/react-components';
+import { type InputOnChangeData, List, ListItem, makeStyles, SearchBox, type SearchBoxChangeEvent, type SelectionItemId, type SelectTabData, type SelectTabEvent, Tab, TabList } from '@fluentui/react-components';
 import React, { useState } from 'react';
+
 import { useTaskStore } from '../stores/storeHooks';
 
 const useStyles = makeStyles({
