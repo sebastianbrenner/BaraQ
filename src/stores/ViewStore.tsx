@@ -8,9 +8,9 @@ import TaskTable from '../components/views/TaskTable/TaskTable';
 
 export const views = [
     { viewKey: 'table', label: 'Tabelle', component: <TaskTable /> },
-    { viewKey: 'kanban', label: '🚧 Kanban 🚧', component: <KanbanBoard /> },
-    { viewKey: 'flow', label: 'Flow', component: <Text>flow</Text> },
     { viewKey: 'calendar', label: 'Kalender', component: <CalendarView /> },
+    { viewKey: 'kanban', label: '🚧 Kanban 🚧', component: <KanbanBoard /> },
+    { viewKey: 'flow', label: '🚧 Flow 🚧', component: <Text>flow</Text> },
 ];
 
 type ViewKey = typeof views[number]['viewKey'];

@@ -4,7 +4,7 @@ import { toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
 
-import { useTaskStore, useTaskTableStore } from '../../../stores/storeHooks';
+import { useSettingsStore, useTaskStore, useTaskTableStore } from '../../../stores/storeHooks';
 import type { Task } from '../../../types/types';
 import { type Priority } from '../../../types/types';
 import { ContextMenu } from './ContextMenu';
@@ -106,7 +106,8 @@ const updateReferenceIds = (
  */
 const TaskTable = observer((): JSX.Element => {
     const { selectedProject, updateTask, tasks, getTaskById } = useTaskStore();
-    const { showCompletedTasks, setContextMenuPosition, setShowContextMenu, setContextMenuTask } = useTaskTableStore();
+    const { setContextMenuPosition, setShowContextMenu, setContextMenuTask } = useTaskTableStore();
+    const { showCompletedTasks } = useSettingsStore();
     // call setEditingCell(null) to exit edit mode
     const [editingCell, setEditingCell] = useState<{ rowId: string; column: keyof Task } | null>(null);
 

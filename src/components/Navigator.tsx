@@ -71,26 +71,6 @@ const Navigator = observer((): JSX.Element => {
             </div> */}
         </NavItem>
     ));
-    /* projectNavItems.push(
-        <NavDivider key={'divider'} />,
-        <Select value={selectedProject.id} onChange={onSelectProject}>
-            <option value={'test'}>test</option>
-            <option value={'test'}>test</option>
-            <option value={'test'}>test</option>
-            <option value={'test'}>test</option>
-        </Select>
-    ); */
-
-    /* const onClickNewProject = (): void => {
-        setModal('newProject', true);
-    }
-
-    projectNavItems.push(
-        <NavDivider key={'divider'} />,
-        <NavItem icon={<AddGroup />} key={'add'} value={'new'} onClick={onClickNewProject}>
-            Neues Projectw
-        </NavItem>
-    ); */
 
     // Close the drawer when the user clicks outside
     useEffect(() => {
