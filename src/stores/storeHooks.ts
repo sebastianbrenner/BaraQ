@@ -1,3 +1,4 @@
+import type { CalendarStore } from './CalendarStore';
 import type { CredentialStore } from './CredentialStore';
 import type { ModalStore } from './ModalStore';
 import type { NavigationStore } from './NavigationStore';
@@ -14,3 +15,4 @@ export const useSettingsStore = (): SettingsStore => useStore().settingsStore;
 export const useModalStore = (): ModalStore => useStore().modalStore;
 export const useTaskTableStore = (): TaskTableStore => useStore().taskTableStore;
 export const useViewStore = (): ViewStore => useStore().viewStore;
+export const useCalendarStore = (): CalendarStore => useStore().calendarStore;

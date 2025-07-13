@@ -8,7 +8,7 @@ import Login from './components/Login';
 import Navigator from './components/Navigator';
 import { type Modal, modalComponents } from './stores/ModalStore';
 import { useStore } from './stores/Store';
-import { useCredentialStore, useModalStore, useTaskTableStore, useViewStore } from './stores/storeHooks';
+import { useCredentialStore, useModalStore, useSettingsStore, useViewStore } from './stores/storeHooks';
 import { views } from './stores/ViewStore';
 
 const useStyles = makeStyles({
@@ -37,7 +37,7 @@ const App = observer((): JSX.Element => {
     const credentialStore = useCredentialStore();
     const { selectedView } = useViewStore();
     const { modals, setModal } = useModalStore();
-    const { showCompletedTasks, setShowCompletedTasks } = useTaskTableStore();
+    const { showCompletedTasks, setShowCompletedTasks } = useSettingsStore();
     const { theme } = useStore();
     const styles = useStyles();
 

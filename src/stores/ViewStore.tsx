@@ -2,6 +2,7 @@ import { Text } from '@fluentui/react-components';
 import log from 'loglevel';
 import { makeAutoObservable } from 'mobx';
 
+import CalendarView from '../components/views/Calendar/CalendarView';
 import KanbanBoard from '../components/views/Kanban/KanbanBoard';
 import TaskTable from '../components/views/TaskTable/TaskTable';
 
@@ -9,6 +10,7 @@ export const views = [
     { viewKey: 'table', label: 'Tabelle', component: <TaskTable /> },
     { viewKey: 'kanban', label: '🚧 Kanban 🚧', component: <KanbanBoard /> },
     { viewKey: 'flow', label: 'Flow', component: <Text>flow</Text> },
+    { viewKey: 'calendar', label: 'Kalender', component: <CalendarView /> },
 ];
 
 type ViewKey = typeof views[number]['viewKey'];
@@ -31,7 +33,7 @@ export class ViewStore {
      * The currently selected view key.
      * @type {ViewKey}
      */
-    selectedView: ViewKey = 'table';
+    selectedView: ViewKey = 'calendar';
 
     /**
      * Sets the selected view key.

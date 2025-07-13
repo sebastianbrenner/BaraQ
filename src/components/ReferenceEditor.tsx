@@ -12,18 +12,20 @@ const useStyles = makeStyles({
 
 type TaskSearchProps = {
     projectId: string;
-    onChangeReferences: (references: { predecessorIds: string[], successorIds: string[] }) => void
+    onChangeReferences: (references: { predecessorIds: string[], successorIds: string[] }) => void;
+    successorIds?: string[];
+    predecessorIds?: string[];
 }
 
-const ReferenceEditor = ({ projectId, onChangeReferences }: TaskSearchProps): JSX.Element => {
-    const { tasks } = useTaskStore();
+const ReferenceEditor = ({ onChangeReferences, predecessorIds, successorIds }: TaskSearchProps): JSX.Element => {
+    const { selectedProjectTasks } = useTaskStore();
     const [searchTerm, setSearchTerm] = useState<string>('');
 
-    const selectedProjectTasks = tasks.filter((task) => task.projectId === projectId);
+    //const selectedProjectTasks = tasks.filter((task) => task.projectId === projectId);
     const filteredTasks = selectedProjectTasks.filter((task) => task.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const [selectedSuccessorIds, setSelectedSuccessorIds] = React.useState<string[]>([]);
-    const [selectedPredescessorIds, setSelectedPredescessorIds] = React.useState<string[]>([]);
+    const [selectedSuccessorIds, setSelectedSuccessorIds] = React.useState<string[]>(successorIds ?? []);
+    const [selectedPredescessorIds, setSelectedPredescessorIds] = React.useState<string[]>(predecessorIds ?? []);
 
     const styles = useStyles();
 

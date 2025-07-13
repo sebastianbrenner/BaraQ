@@ -22,11 +22,6 @@ import type { Task } from '../types/types';
  */
 export class TaskTableStore {
     /**
-     * Whether to show completed tasks in the task table.
-     */
-    showCompletedTasks: boolean = false;
-
-    /**
      * Whether the context menu is visible.
      */
     showContextMenu: boolean = false;
@@ -40,15 +35,6 @@ export class TaskTableStore {
      * The position of the context menu in pixels from the top-left of the page.
      */
     contextMenuPosition: { x: number; y: number } | null = null;
-
-    /**
-     * Set whether to show completed tasks in the task table.
-     * @param value - Whether to show completed tasks.
-     */
-    setShowCompletedTasks = (value: boolean): void => {
-        log.debug('TaskTableStore | setShowCompletedTasks: ', value);
-        this.showCompletedTasks = value;
-    }
 
     /**
      * Set whether the context menu is visible.

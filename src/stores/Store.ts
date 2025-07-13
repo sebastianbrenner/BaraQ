@@ -2,6 +2,7 @@ import log from 'loglevel';
 import { action, makeObservable, observable } from 'mobx';
 import { createContext, useContext } from 'react';
 
+import { CalendarStore } from './CalendarStore';
 import { CredentialStore } from './CredentialStore';
 import { ModalStore } from './ModalStore';
 import { NavigationStore } from './NavigationStore';
@@ -26,6 +27,7 @@ import { ViewStore } from './ViewStore';
  *      store.modalStore
  *      store.taskTableStore
  *      store.viewStore
+ *      store.calendarStore
  *
  * @class Store
  */
@@ -75,6 +77,10 @@ export class Store {
      * The view store managing the currently selected view.
      */
     viewStore: ViewStore;
+    /**
+     * The calendar store managing the state of the calendar view.
+     */
+    calendarStore: CalendarStore;
 
     constructor() {
         this.credentialStore = new CredentialStore();
@@ -84,6 +90,7 @@ export class Store {
         this.modalStore = new ModalStore();
         this.taskTableStore = new TaskTableStore();
         this.viewStore = new ViewStore();
+        this.calendarStore = new CalendarStore();
 
         makeObservable(this, {
             theme: observable,

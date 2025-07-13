@@ -4,15 +4,17 @@ import { makeAutoObservable } from 'mobx';
 import DeleteProjectModal from '../components/modals/DeleteProjectModal';
 import DeleteTaskModal from '../components/modals/DeleteTaskModal';
 import EditProjectModal from '../components/modals/EditProjectModal';
+import EditTaskModal from '../components/modals/EditTaskModal';
 import NewProjectModal from '../components/modals/NewProjectModal';
 import NewTaskModal from '../components/modals/NewTaskModal';
 import SettingsModal from '../components/modals/SettingsModal';
 
-export type Modal = 'newTask' | 'deleteTask' | 'newProject' | 'editProject' | 'deleteProject' | 'settings';
+export type Modal = 'newTask' | 'editTask' | 'deleteTask' | 'newProject' | 'editProject' | 'deleteProject' | 'settings';
 
 // Map modal names to components
 export const modalComponents: Record<Modal, React.FC> = {
     newTask: NewTaskModal,
+    editTask: EditTaskModal,
     deleteTask: DeleteTaskModal,
     newProject: NewProjectModal,
     editProject: EditProjectModal,
@@ -44,6 +46,7 @@ export class ModalStore {
      */
     modals: Record<Modal, boolean> = {
         newTask: false,
+        editTask: false,
         deleteTask: false,
         newProject: false,
         editProject: false,

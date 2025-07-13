@@ -30,10 +30,13 @@
         "@fluentui/react-components": "^9.64.0",
         "@fluentui/react-nav-preview": "^0.13.8",
         "@griffel/react": "^1.5.30",
+        "@types/react-big-calendar": "^1.16.2",
+        "date-fns": "^4.1.0",
         "loglevel": "^1.9.2",
         "mobx": "^6.13.7",
         "mobx-react": "^9.2.0",
         "react": "18",
+        "react-big-calendar": "^1.19.4",
         "react-dom": "18"
     }
 }
