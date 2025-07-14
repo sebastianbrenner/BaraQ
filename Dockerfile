@@ -1,33 +1,26 @@
-FROM oven/bun:1 AS base
-WORKDIR /usr/src/app
+# Stage 1: Build with Bun
+FROM oven/bun:1.1.13 AS builder
 
-# install dependencies into temp directory
-FROM base AS install
-RUN mkdir -p /temp/dev /temp/prod
-COPY package.json bun.lockb /temp/dev/
-WORKDIR /temp/dev
-RUN bun install --frozen-lockfile
-COPY package.json bun.lockb /temp/prod/
-WORKDIR /temp/prod
-RUN bun install --frozen-lockfile --production
+WORKDIR /app
 
-# copy node_modules from temp directory
-# then copy all (non-ignored) project files into the image
-FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
-# [optional] eslint (can also add test)
-ENV NODE_ENV=production
-RUN bun run lint
+# Install dependencies and build the app
+RUN bun install --frozen-lockfile
+RUN bun run build
 
-# copy production dependencies and source code into final image
-FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /usr/src/app/src/ src/
-COPY --from=prerelease /usr/src/app/package.json .
+# Stage 2: Serve with NGINX
+FROM nginx:stable-alpine
 
-# run the app
-USER bun
-EXPOSE 8080/tcp
-ENTRYPOINT [ "bun", "run", "src/index.ts" ]
+# Remove default nginx page
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built assets
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Optional: custom nginx config
+# COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
