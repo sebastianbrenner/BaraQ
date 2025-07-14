@@ -41,7 +41,7 @@ const EditProjectModal = observer((): JSX.Element | null => {
     const [name, setName] = useState('');
 
     useEffect(() => {
-        if (editProjectId) {
+        if (editProjectId !== null) {
             const project = projects.find(project => project.id === editProjectId);
             if (project) {
                 setName(project.name);
@@ -49,7 +49,7 @@ const EditProjectModal = observer((): JSX.Element | null => {
         }
     }, [editProjectId, projects]);
 
-    if (!editProjectId) return null;
+    if (editProjectId === null) return null;
 
     const handleSubmit = (): void => {
         if (!name.trim()) return;

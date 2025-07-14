@@ -3,9 +3,11 @@ import { makeAutoObservable } from 'mobx';
 
 export class SettingsStore {
 
+    /** USER SETTINGS */
+
     /**
-         * Whether to show completed tasks in the task table.
-         */
+     * Whether to show completed tasks in the task table.
+     */
     showCompletedTasks: boolean = false;
 
     /**

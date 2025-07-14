@@ -34,6 +34,11 @@ export class TaskStore {
             name: 'Project 3',
             createdAt: new Date(),
         },
+        {
+            id: 'all',
+            name: 'Alle Projekte',
+            createdAt: new Date(),
+        }
     ];
     public selectedProject: Project = this.projects[0];
     public tasks: Task[] = [
@@ -241,6 +246,9 @@ export class TaskStore {
 
     get selectedProjectTasks(): Task[] {
         if (!this.selectedProject) return [];
+        if (this.selectedProject.id === 'all') {
+            return this.tasks;
+        }
         return this.tasks.filter(task => task.projectId === this.selectedProject.id);
     }
 
