@@ -1,5 +1,5 @@
 # Stage 1: Build with Node
-FROM node:20-alpine@sha256:latest AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
